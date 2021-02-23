@@ -74,4 +74,5 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 - [X] External flash writing
 - [ ] Flash dumping
 - [ ] Internal flash writing
+- [ ] Sorting the homebrew list
 - [ ] Support homebrew which use the GWLoader's file access functions
