@@ -35,9 +35,9 @@ The first command generates the .elf file. The second command splits the .elf fi
 
 The G&W communicates with the GWLoader through a 16-byte buffer at the beginning of the G&W's RAM (addresses 0x24000000-0x2400000F). The first byte is the command/status byte, through which the G&W tells the GWLoader what operation to do, and the GWLoader puts there its status.
 
-Learn more [here](https://github.com/prochazkaml/gwloader-emulator/blob/main/Protocol.md).
+For more information about the communication protocol, click [here](https://github.com/prochazkaml/gwloader-emulator/blob/main/Protocol.md).
 
-You, the programmer, won't have to worry about any of this though, because I'm planning to release a simple library and example code which can communicate to the GWLoader.
+You, the programmer, won't have to worry about any of this though, because I'm planning to release a simple library and example code which can communicate with the GWLoader.
 
 ## Homebrew format
 
