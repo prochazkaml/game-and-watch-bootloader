@@ -27,14 +27,6 @@ make -j4
 
 The first command generates the .elf file. The second command splits the .elf file into two parts (ITCM and DTCM) and attaches a small assembly program to them, which automatically re-assembles the executable and jumps to it. This eliminates the need for the host to be capable of decoding an .elf file, and also opens the possibility for executable compression, which I might try in the near future.
 
-## TO-DO list
-
-- [X] Create a functional UI
-- [X] External flash writing
-- [ ] Flash dumping
-- [ ] Internal flash writing
-- [ ] Support homebrew which use the GWLoader's file access functions
-
 ## Communication protocol
 
 The G&W communicates with the GWLoader through a 16-byte buffer at the beginning of the G&W's RAM (addresses 0x24000000-0x2400000F). The first byte is the command/status byte, through which the G&W tells the GWLoader what operation to do, and the GWLoader puts there its status.
@@ -42,3 +34,44 @@ The G&W communicates with the GWLoader through a 16-byte buffer at the beginning
 Learn more [here](https://github.com/prochazkaml/gwloader-emulator/blob/main/Protocol.md).
 
 You, the programmer, won't have to worry about any of this though, because I'm planning to release a simple library and example code which can communicate to the GWLoader.
+
+## Homebrew format
+
+Each homebrew needs to be in its separate folder in the root directory of the SD card. Inside, there are 2-4 files:
+
+### MANIFEST.TXT _(required)_
+
+A simple text file describing different properties of the homebrew.
+
+Example manifest file:
+
+```
+Name=Tapper
+Author=Ben Heckendorn
+Version=1.0
+UsesFileAccess=True
+```
+
+If you want to be really ugly, you can omit this file. It will say "Corrupted homebrew" in the main menu, but it should still boot. It is _highly_ recommended to include it though.
+
+Note: If UsesFileAccess is not present in the manifest, it is assumed that the value is supposed to be False.
+
+### MAIN.BIN _(required)_
+
+The homebrew program itself, which will be loaded onto the G&W's internal flash (up to 128 kB).
+
+### EXTFLASH.BIN _(optional)_
+
+Supplementary data for the homebrew, which will be loaded onto the G&W's external flash (up to 1 MB). Some homebrew do not use it, thus it is optional.
+
+### ICON.BMP _(optional)_
+
+A 64x48 16bpp icon, which will appear in the main menu. If it is not present, then a generic icon will be displayed instead.
+
+## TO-DO list
+
+- [X] Create a functional UI
+- [X] External flash writing
+- [ ] Flash dumping
+- [ ] Internal flash writing
+- [ ] Support homebrew which use the GWLoader's file access functions
