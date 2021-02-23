@@ -4,6 +4,8 @@
 
 The program which is loaded onto the G&W when the button on the GWLoader is pressed.
 
+The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base) and uses parts of [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader).
+
 ## What is the GWLoader?
 
 It is (or rather, _will_ be, it's still under development) a small board containing a micro SD slot, a button and a small microcontroller (probably an ATtiny), which fits inside the G&W. Its purpose is to eliminate the need to disassemble the G&W and hook up an STM32 programmer everytime the user wants to load different homebrew onto it. Instead, with the GWLoader, when its button is pressed, it springs into life, resets the G&W's CPU and loads this bootloader onto it, which then displays a nice menu to the user. There, when a homebrew is selected, it is flashed onto the G&W's internal (and external, if the homebrew needs it) flash and then run.
