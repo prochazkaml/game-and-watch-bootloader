@@ -8,9 +8,9 @@ The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-a
 
 ## What is the GWLoader?
 
-It is (or rather, _will_ be, it's still under development) a small board containing a micro SD slot, a button and a small microcontroller (probably an ATtiny), which fits inside the G&W. Its purpose is to eliminate the need to disassemble the G&W and hook up an STM32 programmer everytime the user wants to load different homebrew onto it. Instead, with the GWLoader, when its button is pressed, it springs into life, resets the G&W's CPU and loads this bootloader onto it, which then displays a nice menu to the user. There, when a homebrew is selected, it is flashed onto the G&W's internal (and external, if the homebrew needs it) flash and then run.
+It is (or rather, _will_ be, it's still under development) a small board containing a micro SD slot, a button and a small microcontroller (probably an ATtiny), which fits inside the G&W. Its purpose is to eliminate the need to disassemble the G&W and hook up an STM32 programmer everytime the you want to load different homebrew onto it. Instead, with the GWLoader, you can just press its button, it will spring into life, reset the G&W's CPU and load this bootloader onto it, which will then display a nice menu. There, when a homebrew is selected, it is flashed onto the G&W's internal (and external, if necessary) flash and then run.
 
-Sadly, this magical device does not exist yet. However, I have created an [emulator](https://github.com/prochazkaml/gwloader-emulator) in Python. It was created only for development and testing purposes, it is as impractical as loading homebrew the usual way, since an OpenOCD-compatible programmer is still required to be connected.
+Sadly, this magical device does not exist yet. However, I have created an [emulator](https://github.com/prochazkaml/gwloader-emulator) in Python which communicates using OpenOCD. It was created only for development and testing purposes, it is as impractical as loading homebrew the usual way, since an OpenOCD-compatible programmer is still required to be connected.
 
 ## Instructions for building the project
 
