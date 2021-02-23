@@ -1,3 +1,5 @@
+# _THIS SOFTWARE/HARDWARE IS STILL IN HEAVY DEVELOPMENT, DO NOT CONSIDER IT FOR DAILY USE YET!_
+
 # game-and-watch-bootloader
 
 The program which is loaded onto the G&W when the button on the GWLoader is pressed.
