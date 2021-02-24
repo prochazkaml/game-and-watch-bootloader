@@ -93,3 +93,4 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 - [ ] Main executable compression
 - [ ] File compression
 - [ ] Support homebrew which use the GWLoader's file access functions
+- [ ] Modify Retro Go so that it loads data using the GWLoader
