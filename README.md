@@ -72,11 +72,11 @@ Supplementary data for the homebrew, which will be loaded onto the G&W's externa
 
 A 64x48 16bpp icon, which will appear in the main menu. If it is not present, then a generic icon will be displayed instead.
 
-## TO-DO list
+## Features
 
 - [X] Create a functional UI
 - [X] External flash writing
-- [ ] Flash dumping
 - [ ] Internal flash writing
+- [ ] Flash dumping
 - [ ] Sorting the homebrew list
 - [ ] Support homebrew which use the GWLoader's file access functions
