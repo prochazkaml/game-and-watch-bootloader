@@ -79,4 +79,5 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 - [ ] Internal flash writing
 - [ ] Flash dumping
 - [ ] Sorting the homebrew list
+- [ ] File decompression
 - [ ] Support homebrew which use the GWLoader's file access functions
