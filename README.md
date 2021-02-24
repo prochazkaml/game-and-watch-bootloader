@@ -2,7 +2,9 @@
 
 # game-and-watch-bootloader
 
-The program which is loaded onto the G&W when the button on the GWLoader is pressed.
+The main menu program which is loaded onto the G&W when the button on the GWLoader is pressed.
+
+![GWLoader Main Menu](http://gw.prochazka.ml/menu.jpg)
 
 ## Credits
 
