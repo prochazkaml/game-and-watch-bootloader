@@ -14,7 +14,7 @@ The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-a
 
 ## What is the GWLoader?
 
-It is (or rather, _will_ be, it's still under development) a small board containing a micro SD slot, a button and a small microcontroller (probably some cheap AVR), which fits inside the G&W behind its D-Pad. Its purpose is to eliminate the need to disassemble the G&W and hook up an STM32 programmer everytime the you want to load different homebrew onto it. Instead, with the GWLoader, you can just press its button, it will spring into life, reset the G&W's CPU and load this bootloader onto it, which will then display a nice menu. There, when a homebrew is selected, it is flashed onto the G&W's internal (and external, if necessary) flash and then run.
+It is (or rather, _will_ be, it's still under development) a small board containing a micro SD slot, a button and a small microcontroller (not sure whether I'm going to go with ARM or AVR), which fits inside the G&W behind its D-Pad. Its purpose is to eliminate the need to disassemble the G&W and hook up an STM32 programmer everytime the you want to load different homebrew onto it. Instead, with the GWLoader, you can just press its button, it will spring into life, reset the G&W's CPU and load this bootloader onto it, which will then display a nice menu. There, when a homebrew is selected, it is flashed onto the G&W's internal (and external, if necessary) flash and then run.
 
 ![3D render of the PCB design](http://gw.prochazka.ml/3drender.png)
 
@@ -30,7 +30,7 @@ Sadly, this magical device does not exist yet. However, I have created an [emula
 sudo cc tools/gwbin.c -o /usr/bin/gwbin
 ```
 
-This command compiles and installs a small program which can _easily_ extract binary parts from an .elf file. There is probably a way to do this using objcopy, but I couldn't figure it out.
+This command compiles and installs a small program which can _easily_ extract binary parts from an .elf file. There is probably a way to do this using objcopy, but I couldn't figure it out, so I wrote this tiny program instead.
 
 ### Compiling
 
