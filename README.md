@@ -84,11 +84,12 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 
 ## Features
 
-- [X] Create a functional UI
+- [X] Working UI
 - [X] Internal flash writing
 - [X] External flash writing
 - [ ] Flash dumping
-- [ ] Sorting the homebrew list
+- [ ] Flash validation
+- [ ] Homebrew list sorting
 - [ ] Main executable compression
 - [ ] File decompression
 - [ ] Support homebrew which use the GWLoader's file access functions
