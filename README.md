@@ -14,7 +14,7 @@ It is (or rather, _will_ be, it's still under development) a small board contain
 
 ![3D render of the PCB design](http://gw.prochazka.ml/3drender.png)
 
-3D render of the PCB design, subject to change.
+3D render of the PCB design, subject to change. Designed in EasyEDA, available [here](https://oshwlab.com/Michal_Prochazka/gw_hbloader).
 
 Sadly, this magical device does not exist yet. However, I have created an [emulator](https://github.com/prochazkaml/gwloader-emulator) in Python which communicates using OpenOCD. It was created only for development and testing purposes, it is as impractical as loading homebrew the usual way, since an OpenOCD-compatible programmer is still required to be connected.
 
