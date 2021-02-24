@@ -39,7 +39,7 @@ make -j4
 ./makeloader.sh
 ```
 
-The first command generates the .elf file. The second command splits the .elf file into two parts (ITCM and DTCM) and attaches a small assembly program to them, which automatically re-assembles the executable and jumps to it. This eliminates the need for the host to be capable of decoding an .elf file, and also opens the possibility for executable compression, which I might try in the near future.
+The first command generates the .elf file. The second command splits the .elf file into two parts (ITCM and DTCM) and attaches a small assembly program to them, which automatically re-assembles the executable on startup and jumps to it. This eliminates the need for the GWLoader to be capable of decoding an .elf file, and also opens the possibility for executable compression, which I might try in the near future.
 
 ## Communication protocol
 
