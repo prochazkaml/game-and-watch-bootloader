@@ -91,5 +91,5 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 - [ ] Flash validation
 - [ ] Homebrew list sorting
 - [ ] Main executable compression
-- [ ] File decompression
+- [ ] File compression
 - [ ] Support homebrew which use the GWLoader's file access functions
