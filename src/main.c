@@ -72,16 +72,6 @@ static void MX_NVIC_Init();
 
 int selection = 0, maxselection = 0, scroll = 0;
 int card_capacity_mb, card_free_mb;
-/*
-void HAL_Delay(uint32_t Delay)
-{
-  while (Delay--) {
-    // Accurate at 48MHz sysclock
-    for (int i = 0; i < 2 * 48000 / 3; i++) {
-      __NOP();
-    }
-  }
-}*/
 
 void draw_border(int i, int color) {
 	int j;
@@ -558,6 +548,27 @@ void start_flash_process() {
 	if(size % 0x2000) sectors++;
 	
 	draw_window(280, 64);
+	lcd_print_centered("Erasing internal flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
+	lcd_update();
+	
+	// Erase the internal flash
+	
+	HAL_FLASH_Unlock();
+
+	static FLASH_EraseInitTypeDef EraseInitStruct;
+	
+	EraseInitStruct.TypeErase     = FLASH_TYPEERASE_SECTORS;
+	EraseInitStruct.Banks         = FLASH_BANK_1;
+	EraseInitStruct.Sector        = 0;
+	EraseInitStruct.NbSectors     = sectors;
+
+	if (HAL_FLASHEx_Erase(&EraseInitStruct, NULL) != HAL_OK) {
+		Error_Handler();
+	}
+
+	// Write the internal flash
+	
+	draw_window(280, 64);
 	lcd_print_centered("Writing internal flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
 	sprintf(buffer, "(%d bytes, %d 8k sectors)", size, sectors);
 	lcd_print_centered(buffer, 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
@@ -571,15 +582,20 @@ void start_flash_process() {
 		
 		hbloader_call(0x04);
 		
-		// TODO: figure out how internal flash writes work
+		for(j = 0; j < 0x2000; j += 16) {
+			if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, 0x08000000 + i * 0x2000 + j, ((uint32_t)(data_buffer + j))) != HAL_OK) {
+				Error_Handler();
+			}
+		}
 	}
 	
 	draw_progress_bar(sectors, sectors, 60, 124, 200, 16);
 	lcd_update();
 	
 	hbloader_call(0x06);
+	HAL_FLASH_Lock();
 	
-	// Open the external flash file
+	// Write the external flash, if required
 	
 	hbloader_comm_buf_word[3] = (uint32_t) extflash_name;
 	
