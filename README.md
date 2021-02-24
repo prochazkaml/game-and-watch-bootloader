@@ -57,7 +57,7 @@ Each homebrew needs to be in its separate folder in the root directory of the SD
 
 The homebrew program itself, which will be loaded onto the G&W's internal flash (up to 128 kB).
 
-### MANIFEST.TXT _(not strictly required, but recommended)_
+### MANIFEST.TXT _(not strictly required, but highly recommended)_
 
 A simple text file describing different properties of the homebrew.
 
@@ -70,7 +70,7 @@ Version=1.0
 UsesFileAccess=False
 ```
 
-If you want to be really ugly, you can omit this file. It will say "Corrupted homebrew" in the main menu, but it should still boot. It is _highly_ recommended to include it though.
+If you want to be really ugly, you can omit this file. It will say "Corrupted homebrew" in the main menu, but it will still boot. It is _highly_ recommended to include it though.
 
 Note: If UsesFileAccess is not present in the manifest, it is assumed that the value is supposed to be False.
 
