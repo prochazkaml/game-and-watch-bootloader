@@ -59,7 +59,7 @@ Example manifest file:
 Name=Tapper
 Author=Ben Heckendorn
 Version=1.0
-UsesFileAccess=True
+UsesFileAccess=False
 ```
 
 If you want to be really ugly, you can omit this file. It will say "Corrupted homebrew" in the main menu, but it should still boot. It is _highly_ recommended to include it though.
