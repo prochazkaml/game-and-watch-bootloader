@@ -4,7 +4,9 @@
 
 The program which is loaded onto the G&W when the button on the GWLoader is pressed.
 
-The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base) and uses parts of [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader).
+## Credits
+
+The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base). Internal flash writing routine based on an [example project from STM32CubeH7](https://github.com/STMicroelectronics/STM32CubeH7/tree/master/Projects/STM32H7B3I-DK/Examples/FLASH/FLASH_EraseProgram). External flash writing routine based on the [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader).
 
 ## What is the GWLoader?
 
