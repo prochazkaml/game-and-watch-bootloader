@@ -30,9 +30,11 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
+src/stm32.c \
 src/flash.c \
 src/lcd.c \
 src/buttons.c \
+src/hbloader.c \
 src/main.c \
 src/stm32h7xx_it.c \
 src/stm32h7xx_hal_msp.c \

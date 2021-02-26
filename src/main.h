@@ -30,20 +30,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 
-//extern LTDC_HandleTypeDef hltdc;
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
-
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+
 
 /* USER CODE END EC */
 
@@ -55,9 +44,6 @@ extern "C" {
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler();
 void GW_Sleep();
-/* USER CODE BEGIN EFP */
-
-/* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #define GPIO_Speaker_enable_Pin GPIO_PIN_3
@@ -82,9 +68,6 @@ void GW_Sleep();
 #define BTN_B_GPIO_Port GPIOD
 #define BTN_Power_Pin GPIO_PIN_0
 #define BTN_Power_GPIO_Port GPIOA
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }
