@@ -30,21 +30,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-
-/* USER CODE END EC */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
-/* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler();
-void GW_Sleep();
-
 /* Private defines -----------------------------------------------------------*/
 #define GPIO_Speaker_enable_Pin GPIO_PIN_3
 #define GPIO_Speaker_enable_GPIO_Port GPIOE

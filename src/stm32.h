@@ -8,6 +8,8 @@ void MX_SPI2_Init();
 void MX_OCTOSPI1_Init();
 void MX_SAI1_Init();
 void MX_NVIC_Init();
+void GW_Sleep();
+void Error_Handler();
 
 extern LTDC_HandleTypeDef hltdc;
 extern OSPI_HandleTypeDef hospi1;

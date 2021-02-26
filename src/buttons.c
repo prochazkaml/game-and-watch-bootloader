@@ -2,6 +2,8 @@
 
 #include "stm32h7xx_hal.h"
 #include "main.h"
+#include "stm32.h"
+
 // HAL_GPIO_ReadPin
 // #define BTN_PAUSE_Pin GPIO_PIN_13
 // #define BTN_PAUSE_GPIO_Port GPIOC

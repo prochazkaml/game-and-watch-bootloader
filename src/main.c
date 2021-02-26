@@ -626,33 +626,3 @@ int main() {
 		update_hb_info();
 	}
 }
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler() {
-	while(1) {
-		// Blink display to indicate failure
-		lcd_backlight_off();
-		HAL_Delay(500);
-		lcd_backlight_on();
-		HAL_Delay(500);
-	}
-}
-
-/**
-  * @brief  Puts the system into sleep mode.
-  * @retval None
-  */
-void GW_Sleep() {
-	gwloader_call(0x7D);
-
-	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW);
-
-	lcd_backlight_off();
-
-	HAL_PWR_EnterSTANDBYMode();
-	
-	while(1) HAL_NVIC_SystemReset();
-}
