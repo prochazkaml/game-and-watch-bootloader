@@ -1,7 +1,6 @@
 #include "buttons.h"
 
 #include "stm32h7xx_hal.h"
-#include "main.h"
 #include "stm32.h"
 
 // HAL_GPIO_ReadPin

@@ -1,5 +1,3 @@
-#include "main.h"
-
 extern uint32_t gwloader_comm_buf_word[4] __attribute__((section (".gwloader")));
 #define gwloader_comm_buf_hword ((uint16_t *)gwloader_comm_buf_word)
 #define gwloader_comm_buf ((uint8_t *)gwloader_comm_buf_word)

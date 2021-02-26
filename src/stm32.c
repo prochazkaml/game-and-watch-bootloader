@@ -1,6 +1,7 @@
 #include "stm32.h"
 #include "gwloader.h"
 #include "lcd.h"
+#include "stm32h7xx_hal.h"
 
 LTDC_HandleTypeDef hltdc;
 

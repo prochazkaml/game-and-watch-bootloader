@@ -1,3 +1,4 @@
+#include "stm32h7xx_hal.h"
 #include "gwloader.h"
 #include "lcd.h"
 #include "buttons.h"

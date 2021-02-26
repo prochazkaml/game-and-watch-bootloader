@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "main.h"
+#include "stm32h7xx_hal.h"
 #include "stm32.h"
 #include "gwloader.h"
 #include "buttons.h"
