@@ -2,6 +2,7 @@
 
 #include "flash.h"
 #include "main.h"
+#include "stm32.h"
 
 static quad_mode_t g_quad_mode = SPI_MODE;
 static spi_chip_vendor_t g_vendor = VENDOR_MX;
