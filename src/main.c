@@ -20,7 +20,7 @@
 #include <string.h>
 #include "main.h"
 #include "stm32.h"
-#include "hbloader.h"
+#include "gwloader.h"
 #include "buttons.h"
 #include "flash.h"
 #include "lcd.h"
@@ -500,8 +500,7 @@ void start_flash_process() {
   * @retval int
   */
 int main() {
-	int i, j;
-	char buffer[64];
+	int i;
 	
 	// Reset of all peripherals, Initializes the Flash interface and the Systick.
 
@@ -516,11 +515,9 @@ int main() {
 	// Initialize all configured peripherals
 
 	MX_GPIO_Init();
-	MX_DMA_Init();
 	MX_LTDC_Init();
 	MX_SPI2_Init();
 	MX_OCTOSPI1_Init();
-	MX_SAI1_Init();
 
 	// Initialize interrupts
 
@@ -581,11 +578,11 @@ int main() {
 		while(1) buttons_get();
 	}
 	
-	for(j = 0; j < 3; j++) cache[j].load_status = 0, cache[j].id = -1, cache[j].id_pending = -1, init_hb_info(j);
+	for(i = 0; i < 3; i++) cache[i].load_status = 0, cache[i].id = -1, cache[i].id_pending = -1, init_hb_info(i);
 	
 	// Draw the header
 	
-	for(j = 0; j < 16 * 320; j++) framebuffer[j] = LCD_COLOR_GRAYSCALE(4);
+	for(i = 0; i < 16 * 320; i++) framebuffer[i] = LCD_COLOR_GRAYSCALE(4);
 	lcd_print_centered("G&W Homebrew Loader Menu", 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	while (1) {
@@ -597,7 +594,7 @@ int main() {
 				selection = (maxselection - 1);
 				scroll = maxselection - 3;
 				if(scroll < 0) scroll = 0;
-				for(j = 0; j < 3; j++) init_hb_info(scroll + j);
+				for(i = 0; i < 3; i++) init_hb_info(scroll + i);
 			}
 			
 			if(selection - scroll == -1) {
@@ -612,7 +609,7 @@ int main() {
 			if(selection == maxselection) {
 				selection = 0;
 				scroll = 0;
-				for(j = 0; j < 3; j++) init_hb_info(j);
+				for(i = 0; i < 3; i++) init_hb_info(i);
 			}
 				
 			if(selection - scroll == 3) {
@@ -649,13 +646,13 @@ void Error_Handler() {
   * @retval None
   */
 void GW_Sleep() {
-	HAL_SAI_DMAStop(&hsai_BlockA1);
+	hbloader_call(0x7D);
 
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW);
 
 	lcd_backlight_off();
 
 	HAL_PWR_EnterSTANDBYMode();
-
+	
 	while(1) HAL_NVIC_SystemReset();
 }
