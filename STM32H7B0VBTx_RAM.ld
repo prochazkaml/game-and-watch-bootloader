@@ -84,7 +84,7 @@ SECTIONS
   .lcd :
   {
     . = ALIGN(4);
-    *(.hbloader)
+    *(.gwloader)
     *(.databuf)
     *(.lcd)
     . = ALIGN(4);

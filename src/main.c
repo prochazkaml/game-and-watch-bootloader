@@ -156,21 +156,21 @@ void update_hb_info() {
 	if(cache[i].load_status) {
 		switch(cache[i].load_status) {
 			case 1:		// Enter the directory
-				hbloader_comm_buf_word[3] = (uint32_t) directory_names[cache[i].id];
-				hbloader_call_nonblock(0x0C);
+				gwloader_comm_buf_word[3] = (uint32_t) directory_names[cache[i].id];
+				gwloader_call_nonblock(0x0C);
 				cache[i].load_status++;
 				break;
 				
 			case 3:		// Open then manifest file for reading
-				hbloader_comm_buf_word[3] = (uint32_t) manifest_name;
-				hbloader_call_nonblock(0x02);
+				gwloader_comm_buf_word[3] = (uint32_t) manifest_name;
+				gwloader_call_nonblock(0x02);
 				cache[i].load_status++;
 				break;
 				
 			case 5:		// Read the manifest file
-				hbloader_comm_buf_word[2] = sizeof(data_buffer);
-				hbloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				hbloader_call_nonblock(0x04);
+				gwloader_comm_buf_word[2] = sizeof(data_buffer);
+				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
+				gwloader_call_nonblock(0x04);
 				cache[i].load_status++;
 				break;
 
@@ -178,7 +178,7 @@ void update_hb_info() {
 				// Zero-terminate the file
 				
 				if(cache[i].id_pending < 0) {
-					*(data_buffer + hbloader_comm_buf_word[1]) = 0;
+					*(data_buffer + gwloader_comm_buf_word[1]) = 0;
 					
 					// Use default values first
 					
@@ -206,20 +206,20 @@ void update_hb_info() {
 					}
 				}
 				
-				hbloader_call_nonblock(0x06);
+				gwloader_call_nonblock(0x06);
 				cache[i].load_status++;
 				break;
 				
 			case 9:		// Open the homebrew icon
-				hbloader_comm_buf_word[3] = (uint32_t) icon_name;
-				hbloader_call_nonblock(0x02);
+				gwloader_comm_buf_word[3] = (uint32_t) icon_name;
+				gwloader_call_nonblock(0x02);
 				cache[i].load_status++;
 				break;
 				
 			case 11:	// Read the icon
-				hbloader_comm_buf_word[2] = sizeof(data_buffer);
-				hbloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				hbloader_call_nonblock(0x04);
+				gwloader_comm_buf_word[2] = sizeof(data_buffer);
+				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
+				gwloader_call_nonblock(0x04);
 				cache[i].load_status++;
 				break;
 
@@ -228,13 +228,13 @@ void update_hb_info() {
 					decode_bmp(data_buffer, i);
 				}
 				
-				hbloader_call_nonblock(0x06);
+				gwloader_call_nonblock(0x06);
 				cache[i].load_status++;
 				break;
 				
 			case 15:		// Exit the directory
-				hbloader_comm_buf_word[3] = (uint32_t) updir_name;
-				hbloader_call_nonblock(0x0C);
+				gwloader_comm_buf_word[3] = (uint32_t) updir_name;
+				gwloader_call_nonblock(0x0C);
 				cache[i].load_status++;
 				break;
 				
@@ -246,12 +246,12 @@ void update_hb_info() {
 				break;
 				
 			case 2: case 6: case 8: case 12: case 14: case 16: 	// Check if the command is done
-				if(hbloader_call_isdone()) cache[i].load_status++;
+				if(gwloader_call_isdone()) cache[i].load_status++;
 				break;
 				
 			case 4:		// Special handler if the manifest file doesn't exist
-				if(hbloader_comm_buf[0] == 0x81) {
-					hbloader_comm_buf[0] = 0;
+				if(gwloader_comm_buf[0] == 0x81) {
+					gwloader_comm_buf[0] = 0;
 					
 					if(cache[i].id_pending < 0) {
 						sprintf(cache[i].name, "Corrupted homebrew");
@@ -262,7 +262,7 @@ void update_hb_info() {
 					}
 					
 					cache[i].load_status = 15;
-				} else if(hbloader_call_isdone_ingore_missing()) {
+				} else if(gwloader_call_isdone_ingore_missing()) {
 					cache[i].load_status++;
 					break;
 				}
@@ -270,15 +270,15 @@ void update_hb_info() {
 				break;
 				
 			case 10:	// Special handler if the icon file doesn't exist
-				if(hbloader_comm_buf[0] == 0x81) {
-					hbloader_comm_buf[0] = 0;
+				if(gwloader_comm_buf[0] == 0x81) {
+					gwloader_comm_buf[0] = 0;
 
 					if(cache[i].id_pending < 0) {
 						decode_bmp(default_bmp, i);
 					}
 					
 					cache[i].load_status = 15;
-				} else if(hbloader_call_isdone_ingore_missing()) {
+				} else if(gwloader_call_isdone_ingore_missing()) {
 					cache[i].load_status++;
 					break;
 				}
@@ -374,14 +374,14 @@ void start_flash_process() {
 	
 	// Enter the correct directory and open the internal flash file
 	
-	hbloader_comm_buf_word[3] = (uint32_t) directory_names[selection];
-	hbloader_call(0x0C);
+	gwloader_comm_buf_word[3] = (uint32_t) directory_names[selection];
+	gwloader_call(0x0C);
 	
-	hbloader_comm_buf_word[3] = (uint32_t) intflash_name;
+	gwloader_comm_buf_word[3] = (uint32_t) intflash_name;
 	
-	if(hbloader_call_catcherr(0x02)) {
-		hbloader_comm_buf_word[3] = (uint32_t) updir_name;
-		hbloader_call(0x0C);
+	if(gwloader_call_catcherr(0x02)) {
+		gwloader_comm_buf_word[3] = (uint32_t) updir_name;
+		gwloader_call(0x0C);
 
 		draw_window(240, 40);
 		lcd_print_centered("This homebrew is corrupted.", 160, 112, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
@@ -394,7 +394,7 @@ void start_flash_process() {
 	
 	char buffer[64];
 	
-	int size = hbloader_comm_buf_word[1];
+	int size = gwloader_comm_buf_word[1];
 	int sectors = size / 0x2000;
 	if(size % 0x2000) sectors++;
 	
@@ -424,14 +424,14 @@ void start_flash_process() {
 	sprintf(buffer, "(%d bytes, %d 8k sectors)", size, sectors);
 	lcd_print_centered(buffer, 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
 	
-	hbloader_comm_buf_word[2] = 0x2000;
-	hbloader_comm_buf_word[3] = (uint32_t) data_buffer;
+	gwloader_comm_buf_word[2] = 0x2000;
+	gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
 	
 	for(i = 0; i < sectors; i++) {
 		draw_progress_bar(i, sectors, 60, 124, 200, 16);
 		lcd_update();
 		
-		hbloader_call(0x04);
+		gwloader_call(0x04);
 		
 		for(j = 0; j < 0x2000; j += 16) {
 			if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, 0x08000000 + i * 0x2000 + j, ((uint32_t)(data_buffer + j))) != HAL_OK) {
@@ -443,14 +443,14 @@ void start_flash_process() {
 	draw_progress_bar(sectors, sectors, 60, 124, 200, 16);
 	lcd_update();
 	
-	hbloader_call(0x06);
+	gwloader_call(0x06);
 	HAL_FLASH_Lock();
 	
 	// Write the external flash, if required
 	
-	hbloader_comm_buf_word[3] = (uint32_t) extflash_name;
+	gwloader_comm_buf_word[3] = (uint32_t) extflash_name;
 	
-	if(!hbloader_call_catcherr(0x02)) {
+	if(!gwloader_call_catcherr(0x02)) {
 		draw_window(280, 64);
 		lcd_print_centered("Erasing external flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
 		lcd_update();
@@ -460,7 +460,7 @@ void start_flash_process() {
 		OSPI_NOR_WriteEnable(&hospi1);
 		OSPI_ChipErase(&hospi1);
 		
-		size = hbloader_comm_buf_word[1];
+		size = gwloader_comm_buf_word[1];
 		sectors = size / 0x10000;
 		if(size % 0x10000) sectors++;
 		
@@ -469,14 +469,14 @@ void start_flash_process() {
 		sprintf(buffer, "(%d bytes, %d 64k sectors)", size, sectors);
 		lcd_print_centered(buffer, 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
 		
-		hbloader_comm_buf_word[2] = 0x10000;
-		hbloader_comm_buf_word[3] = (uint32_t) data_buffer;
+		gwloader_comm_buf_word[2] = 0x10000;
+		gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
 		
 		for(i = 0; i < sectors; i++) {
 			draw_progress_bar(i, sectors, 60, 124, 200, 16);
 			lcd_update();
 			
-			hbloader_call(0x04);
+			gwloader_call(0x04);
 			
 //			OSPI_BlockErase(&hospi1, i * 0x10000);
 			OSPI_Program(&hospi1, i * 0x10000, data_buffer, 0x10000);
@@ -485,14 +485,14 @@ void start_flash_process() {
 		draw_progress_bar(sectors, sectors, 60, 124, 200, 16);
 		lcd_update();
 		
-		hbloader_call(0x06);
+		gwloader_call(0x06);
 	}
 	
 	draw_window(280, 64);
 	lcd_print_centered("Rebooting...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(8));
 	lcd_update();
 	
-	hbloader_call(0x7F);
+	gwloader_call(0x7F);
 }
 
 /**
@@ -533,15 +533,15 @@ int main() {
 	lcd_print_centered("Detecting SD card...", 160, 116, 0xFFFF, 0x0000);
 	lcd_update();
 
-	hbloader_call(0x01);
+	gwloader_call(0x01);
 
 	uint64_t tmp;
 	
-	tmp = hbloader_comm_buf_word[2];
+	tmp = gwloader_comm_buf_word[2];
 	tmp = tmp * 512 / 1000000;
 	card_capacity_mb = tmp;
 
-	tmp = hbloader_comm_buf_word[3];
+	tmp = gwloader_comm_buf_word[3];
 	tmp = tmp * 512 / 1000000;
 	card_free_mb = tmp;
 
@@ -550,8 +550,8 @@ int main() {
 	lcd_print_centered("Loading root directory...", 160, 116, 0xFFFF, 0x0000);
 	lcd_update();
 
-	hbloader_comm_buf_word[3] = (uint32_t) dir_buffer;
-	hbloader_call(0x0D);
+	gwloader_comm_buf_word[3] = (uint32_t) dir_buffer;
+	gwloader_call(0x0D);
 
 	// Parse the directory
 	
@@ -646,7 +646,7 @@ void Error_Handler() {
   * @retval None
   */
 void GW_Sleep() {
-	hbloader_call(0x7D);
+	gwloader_call(0x7D);
 
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW);
 
