@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 	printf("Verified STM32 ELF.\n");
 
 	FILE *outfile = fopen(argv[2], "wb");
-	unsigned char *out = malloc(192 * 1024);
+	unsigned char *out = malloc(maxaddr - baseaddr);
 
 	if(outfile == NULL) {
 		printf("Error opening file %s for writing!\n", argv[2]);
