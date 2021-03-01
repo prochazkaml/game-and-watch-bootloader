@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Write initial program position
-echo "init_pc: .long `arm-none-eabi-objdump -f build/gw_base.elf | grep "start address" | awk '{print $3}'`" > build/data.s
+echo "init_pc: .long `arm-none-eabi-objdump -f build/gw_boot.elf | grep "start address" | awk '{print $3}'`" > build/data.s
 
 # Extract ITCM and DTCM data from the elf file (compile gwbin from the "tools" directory)
-gwbin build/gw_base.elf build/itcm.bin 0x00000000 0x00010000
-gwbin build/gw_base.elf build/dtcm.bin 0x20000000 0x20020000
+gwbin build/gw_boot.elf build/itcm.bin 0x00000000 0x00010000
+gwbin build/gw_boot.elf build/dtcm.bin 0x20000000 0x20020000
 
 # Compress the extracted data (https://github.com/lz4/lz4)
 #lz4 -f -9 -m build/dtcm.bin build/itcm.bin

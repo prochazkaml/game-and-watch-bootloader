@@ -1,6 +1,3 @@
-#ifndef _FLASH_H_
-#define _FLASH_H_
-
 #include "stm32h7xx_hal.h"
 
 typedef enum {
@@ -21,5 +18,3 @@ void OSPI_ChipErase(OSPI_HandleTypeDef *hospi);
 void OSPI_BlockErase(OSPI_HandleTypeDef *hospi, uint32_t address);
 void OSPI_SectorErase(OSPI_HandleTypeDef *hospi, uint32_t address);
 void OSPI_Program(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, int32_t buffer_size);
-
-#endif

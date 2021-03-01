@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "flash.h"
-#include "stm32h7xx_hal.h"
 #include "stm32.h"
 
 static quad_mode_t g_quad_mode = SPI_MODE;

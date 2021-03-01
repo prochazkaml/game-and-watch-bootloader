@@ -9,7 +9,7 @@
 ######################################
 # target
 ######################################
-TARGET = gw_base
+TARGET = gw_boot
 
 ######################################
 # building variables
@@ -35,6 +35,7 @@ src/flash.c \
 src/lcd.c \
 src/buttons.c \
 src/gwloader.c \
+src/mainmenu.c \
 src/main.c \
 src/stm32h7xx_it.c \
 src/stm32h7xx_hal_msp.c \

@@ -1,6 +1,7 @@
 #include <string.h>
+#include <stdint.h>
+
 #include "lcd.h"
-#include "stm32h7xx_hal.h"
 #include "font_basic.h"
 
 uint16_t framebuffer[320 * 240];

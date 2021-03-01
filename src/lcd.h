@@ -1,8 +1,4 @@
-#ifndef _LCD_H_
-#define _LCD_H_
-
 #include "stm32h7xx_hal.h"
-#include <stdint.h>
 
 extern uint16_t framebuffer[320 * 240]  __attribute__((section (".lcd")));
 
@@ -19,5 +15,3 @@ void lcd_putchar(unsigned char c, int x, int y, int fg, int bg);
 void lcd_print(char *str, int x, int y, int fg, int bg);
 void lcd_print_centered(char *str, int x, int y, int fg, int bg);
 void lcd_print_rtl(char *str, int x, int y, int fg, int bg);
-
-#endif
