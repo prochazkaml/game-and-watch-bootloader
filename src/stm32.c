@@ -381,7 +381,9 @@ void Error_Handler() {
   * @retval None
   */
 void GW_Sleep() {
-	gwloader_call(0x7D);
+	gwloader_call_nonblock(0x7D);
+	
+	HAL_Delay(100);
 
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW);
 

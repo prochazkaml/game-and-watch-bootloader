@@ -18,6 +18,16 @@ void lcd_backlight_on() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 }
 
+void lcd_draw_icon(uint16_t *bmp, int off_x, int off_y) {
+	int x, y, ptr = 0;
+
+	for(y = 0; y < 48; y++) {
+		for(x = 0; x < 64; x++) {
+			framebuffer[off_x + x + (off_y + 47 - y) * 320] = bmp[ptr++];
+		}
+	}
+}
+
 void lcd_putchar(unsigned char c, int x, int y, int fg, int bg) {
 	int i, j;
 
