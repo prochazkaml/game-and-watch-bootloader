@@ -49,8 +49,8 @@ void start_flash_process(int selection) {
 	char buffer[64];
 	
 	int size = gwloader_comm_buf_word[1];
-	int sectors = size / 0x2000;
-	if(size % 0x2000) sectors++;
+	int sectors = size >> 13;
+	if(size & 0x1FFF) sectors++;
 	
 	lcd_draw_window(280, 64);
 	lcd_print_centered("Erasing internal flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
@@ -115,8 +115,8 @@ void start_flash_process(int selection) {
 		OSPI_ChipErase(&hospi1);
 		
 		size = gwloader_comm_buf_word[1];
-		sectors = size / 0x10000;
-		if(size % 0x10000) sectors++;
+		sectors = size >> 16;
+		if(size & 0xFFFF) sectors++;
 		
 		lcd_draw_window(280, 64);
 		lcd_print_centered("Writing external flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
@@ -132,7 +132,7 @@ void start_flash_process(int selection) {
 			
 			gwloader_call(0x04);
 			
-//			OSPI_BlockErase(&hospi1, i * 0x10000);
+//			OSPI_BlockErase(&hospi1, i * 0x10000);	// Doesn't work right :/
 			OSPI_Program(&hospi1, i * 0x10000, data_buffer, 0x10000);
 		}
 		
