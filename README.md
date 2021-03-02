@@ -41,6 +41,8 @@ make -j4
 
 The first command generates the .elf file. The second command splits the .elf file into two parts (ITCM and DTCM) and attaches a small assembly program to them, which automatically re-assembles the executable on startup and jumps to it. This eliminates the need for the GWLoader to be capable of decoding an .elf file, and also opens the possibility for executable compression, which I might try in the near future.
 
+**It is highly recommended to use the latest version of the [GNU ARM Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) (≥ v10.2.1), since it produces smaller binaries than the one in the Debian/Ubuntu repos (v8.3.1).**
+
 ## Communication protocol
 
 The G&W communicates with the GWLoader through a 16-byte buffer at the beginning of the G&W's RAM (addresses 0x24000000-0x2400000F). The first byte is the command/status byte, through which the G&W tells the GWLoader what operation to do, and the GWLoader puts there its status.
