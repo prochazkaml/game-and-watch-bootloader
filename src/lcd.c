@@ -7,6 +7,60 @@
 uint16_t framebuffer[320 * 240];
 uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 
+void lcd_fade() {
+	int i, val, r, g, b;
+	
+	for(i = 0; i < 320 * 240; i++) {
+		val = framebuffer[i];
+		r = val >> 11;
+		g = (val >> 5) & 0b111111;
+		b = val & 0b11111;
+		
+		r >>= 3;
+		g >>= 3;
+		b >>= 3;
+		framebuffer[i] = (r << 11) | (g << 5) | b;
+	}
+	
+}
+
+void lcd_draw_window(int w, int h) {
+	int x, y;
+
+	w /= 2;
+	h /= 2;
+	
+	for(y = 120 - h; y < 120 + h; y++) {
+		for(x = 160 - w; x < 160 + w; x++) {
+			framebuffer[x + y * 320] = LCD_COLOR_GRAYSCALE(4);
+		}
+	}
+	
+	for(x = 159 - w; x < 160 + w; x++) {
+		framebuffer[x + (119 - h) * 320] = 0xFFFF;
+		framebuffer[x + (120 + h) * 320] = 0xFFFF;
+	}
+
+	for(y = 119 - h; y < 120 + h; y++) {
+		framebuffer[159 - w + y * 320] = 0xFFFF;
+		framebuffer[160 + w + y * 320] = 0xFFFF;
+	}
+
+	
+}
+
+void lcd_draw_progress_bar(int step, int total, int x, int y, int w, int h) {
+	int i, j, color;
+	
+	for(i = 0; i < w; i++) {
+		color = (i >= (step * w / total)) ? 0x0000 : 0xFFFF;
+		
+		for(j = y; j < y + h; j++) {
+			framebuffer[x + i + j * 320] = color;
+		}
+	}
+}
+
 void lcd_backlight_off() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);

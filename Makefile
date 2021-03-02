@@ -37,6 +37,7 @@ src/lcd.c \
 src/buttons.c \
 src/gwloader.c \
 src/mainmenu.c \
+src/flashload.c \
 src/main.c \
 src/stm32h7xx_it.c \
 src/stm32h7xx_hal_msp.c \

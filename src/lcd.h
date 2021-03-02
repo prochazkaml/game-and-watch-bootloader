@@ -11,6 +11,9 @@ void lcd_update();
 void lcd_backlight_on();
 void lcd_backlight_off();
 
+void lcd_fade();
+void lcd_draw_window(int w, int h);
+void lcd_draw_progress_bar(int step, int total, int x, int y, int w, int h);
 void lcd_putchar(unsigned char c, int x, int y, int fg, int bg);
 void lcd_print(char *str, int x, int y, int fg, int bg);
 void lcd_print_centered(char *str, int x, int y, int fg, int bg);
