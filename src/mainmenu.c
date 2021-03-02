@@ -2,10 +2,11 @@
 #include <string.h>
 
 #include "mainmenu.h"
+
 #include "buttons.h"
 #include "lcd.h"
 #include "gwloader.h"
-#include "common.h"
+#include "stm32.h"
 
 #include "default.h"
 #include "hourglass.h"
@@ -208,7 +209,7 @@ void update_hb_info() {
 					if(cache[i].id_pending < 0) {
 						sprintf(cache[i].name, "Corrupted homebrew");
 						sprintf(cache[i].author, "The manifest file is missing.");
-						sprintf(cache[i].version, "???");
+						cache[i].version[0] = 0;
 						
 						decode_bmp(default_bmp, i);
 					}
@@ -300,6 +301,10 @@ int mainmenu(char *title) {
 
 		if(buttons & B_A) {
 			return selection;
+		}
+		
+		if(buttons & B_B) {
+			return -1;
 		}
 		
 		update_screen();

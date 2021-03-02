@@ -1,5 +1,22 @@
 #include "stm32h7xx_hal.h"
 
+extern uint8_t *directory_names[1024];
+extern uint8_t dir_buffer[16384] __attribute__((section (".databuf")));
+
+extern uint8_t data_buffer[64 * 1024] __attribute__((section (".databuf")));
+
+extern const char updir_name[];
+extern const char intflash_name[];
+extern const char extflash_name[];
+extern const char icon_name[];
+extern const char manifest_name[];
+
+extern LTDC_HandleTypeDef hltdc;
+extern OSPI_HandleTypeDef hospi1;
+extern SAI_HandleTypeDef hsai_BlockA1;
+extern DMA_HandleTypeDef hdma_sai1_a;
+extern SPI_HandleTypeDef hspi2;
+
 void SystemClock_Config();
 void MX_GPIO_Init();
 void MX_DMA_Init();
@@ -10,12 +27,6 @@ void MX_SAI1_Init();
 void MX_NVIC_Init();
 void GW_Sleep();
 void Error_Handler();
-
-extern LTDC_HandleTypeDef hltdc;
-extern OSPI_HandleTypeDef hospi1;
-extern SAI_HandleTypeDef hsai_BlockA1;
-extern DMA_HandleTypeDef hdma_sai1_a;
-extern SPI_HandleTypeDef hspi2;
 
 #define GPIO_Speaker_enable_Pin GPIO_PIN_3
 #define GPIO_Speaker_enable_GPIO_Port GPIOE

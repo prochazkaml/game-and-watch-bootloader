@@ -3,7 +3,6 @@
 
 #include "stm32h7xx_hal.h"
 #include "flashload.h"
-#include "common.h"
 #include "gwloader.h"
 #include "mainmenu.h"
 #include "buttons.h"

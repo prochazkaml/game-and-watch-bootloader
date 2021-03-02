@@ -11,18 +11,17 @@ uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 void lcd_fade() {
 	int i, val, r, g, b;
 	
-	for(i = 0; i < 320 * 240; i++) {
+	for(i = 16 * 320; i < 320 * 224; i++) {
 		val = framebuffer[i];
 		r = val >> 11;
 		g = (val >> 5) & 0b111111;
 		b = val & 0b11111;
 		
-		r >>= 3;
-		g >>= 3;
-		b >>= 3;
+		r >>= 2;
+		g >>= 2;
+		b >>= 2;
 		framebuffer[i] = (r << 11) | (g << 5) | b;
 	}
-	
 }
 
 void lcd_draw_window(int w, int h) {

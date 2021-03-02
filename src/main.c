@@ -24,8 +24,8 @@
 #include "buttons.h"
 #include "flash.h"
 #include "lcd.h"
-#include "common.h"
 
+#include "submenu.h"
 #include "mainmenu.h"
 #include "flashload.h"
 
@@ -120,6 +120,9 @@ int main() {
 	while(1) {
 		int selection = mainmenu("G&W Homebrew Loader Menu");
 		
-		if(selection >= 0) start_flash_process(selection);
+		if(selection >= 0)
+			start_flash_process(selection);
+		else if(selection == -1)
+			submenu();
 	}
 }
