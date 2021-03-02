@@ -31,7 +31,7 @@
 
 /**
   * @brief  The application entry point.
-  * @retval int
+  * @return Nothing.
   */
 int main() {
 	int card_capacity_mb, card_free_mb, direntries = 0;

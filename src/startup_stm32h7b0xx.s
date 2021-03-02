@@ -52,7 +52,7 @@ defined in linker script */
  *          necessary set is performed, after which the application
  *          supplied main() routine is called. 
  * @param  None
- * @retval : None
+ * @return Nothing.
 */
 
     .section  .text.Reset_Handler
@@ -104,7 +104,7 @@ LoopFillZerobss:
  *         unexpected interrupt.  This simply enters an infinite loop, preserving
  *         the system state for examination by a debugger.
  * @param  None     
- * @retval None       
+ * @return Nothing.       
 */
     .section  .text.Default_Handler,"ax",%progbits
 Default_Handler:

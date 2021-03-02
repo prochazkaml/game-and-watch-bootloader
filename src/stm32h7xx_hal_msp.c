@@ -80,7 +80,7 @@ void HAL_MspInit(void)
 * @brief LTDC MSP Initialization
 * This function configures the hardware resources used in this example
 * @param hltdc: LTDC handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_LTDC_MspInit(LTDC_HandleTypeDef* hltdc)
 {
@@ -210,7 +210,7 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* hltdc)
 * @brief LTDC MSP De-Initialization
 * This function freeze the hardware resources used in this example
 * @param hltdc: LTDC handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* hltdc)
 {
@@ -270,7 +270,7 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* hltdc)
 * @brief OSPI MSP Initialization
 * This function configures the hardware resources used in this example
 * @param hospi: OSPI handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_OSPI_MspInit(OSPI_HandleTypeDef* hospi)
 {
@@ -349,7 +349,7 @@ void HAL_OSPI_MspInit(OSPI_HandleTypeDef* hospi)
 * @brief OSPI MSP De-Initialization
 * This function freeze the hardware resources used in this example
 * @param hospi: OSPI handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_OSPI_MspDeInit(OSPI_HandleTypeDef* hospi)
 {
@@ -391,7 +391,7 @@ void HAL_OSPI_MspDeInit(OSPI_HandleTypeDef* hospi)
 * @brief SPI MSP Initialization
 * This function configures the hardware resources used in this example
 * @param hspi: SPI handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 {
@@ -427,7 +427,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 * @brief SPI MSP De-Initialization
 * This function freeze the hardware resources used in this example
 * @param hspi: SPI handle pointer
-* @retval None
+* @return Nothing.
 */
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 {

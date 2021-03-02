@@ -7,6 +7,10 @@
 
 int old_buttons = 0;
 
+/**
+  * @brief  Reads the button presses and handles the sleep button.
+  * @return Button bitfield.
+  */
 uint32_t buttons_get() {
 	bool left = HAL_GPIO_ReadPin(BTN_Left_GPIO_Port, BTN_Left_Pin) == GPIO_PIN_RESET;
 	bool right = HAL_GPIO_ReadPin(BTN_Right_GPIO_Port, BTN_Right_Pin) == GPIO_PIN_RESET;

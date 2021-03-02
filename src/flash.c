@@ -6,6 +6,15 @@
 static quad_mode_t g_quad_mode = SPI_MODE;
 static spi_chip_vendor_t g_vendor = VENDOR_MX;
 
+/**
+  * @brief  Sets the command lines based on the chip used.
+  * @param  cmd: The command definition.
+  * @param  quad_mode: SPI_MODE or QUAD_MODE. Depends on the connection.
+  * @param  vendor: VENDOR_MX or VENDOR_ISSI. Depends on the chip used.
+  * @param  has_address: Set to true if the chip has address lines.
+  * @param  has_data: Set to true if the chip has data lines.
+  * @return Nothing.
+  */
 void set_cmd_lines(OSPI_RegularCmdTypeDef *cmd, quad_mode_t quad_mode, spi_chip_vendor_t vendor, uint8_t has_address, uint8_t has_data)
 {
   if (quad_mode == SPI_MODE) {

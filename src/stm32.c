@@ -27,7 +27,7 @@ SPI_HandleTypeDef hspi2;
 
 /**
   * @brief System Clock Configuration
-  * @retval None
+  * @return Nothing.
   */
 void SystemClock_Config() {
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -115,7 +115,7 @@ void SystemClock_Config() {
 
 /**
   * @brief NVIC Configuration.
-  * @retval None
+  * @return Nothing.
   */
 void MX_NVIC_Init() {
 	// OCTOSPI1_IRQn interrupt configuration
@@ -125,7 +125,7 @@ void MX_NVIC_Init() {
 
 /**
   * @brief LTDC Initialization Function
-  * @retval None
+  * @return Nothing.
   */
 void MX_LTDC_Init() {
 	LTDC_LayerCfgTypeDef pLayerCfg = {0};
@@ -194,7 +194,7 @@ void MX_LTDC_Init() {
 
 /**
   * @brief OCTOSPI1 Initialization Function
-  * @retval None
+  * @return Nothing.
   */
 void MX_OCTOSPI1_Init() {
 	OSPIM_CfgTypeDef sOspiManagerCfg = {0};
@@ -233,7 +233,7 @@ void MX_OCTOSPI1_Init() {
 
 /**
   * @brief SAI1 Initialization Function
-  * @retval None
+  * @return Nothing.
   */
 void MX_SAI1_Init() {
 	hsai_BlockA1.Instance = SAI1_Block_A;
@@ -255,7 +255,7 @@ void MX_SAI1_Init() {
 
 /**
   * @brief SPI2 Initialization Function
-  * @retval None
+  * @return Nothing.
   */
 void MX_SPI2_Init() {
 	// SPI2 parameter configuration
@@ -289,7 +289,7 @@ void MX_SPI2_Init() {
 
 /**
   * @brief Enables DMA controller clock
-  * @retval None
+  * @return Nothing.
   */
 void MX_DMA_Init() {
 	// DMA controller clock enable
@@ -303,7 +303,7 @@ void MX_DMA_Init() {
 
 /**
   * @brief GPIO Initialization Function
-  * @retval None
+  * @return Nothing.
   */
 void MX_GPIO_Init() {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -377,7 +377,7 @@ void MX_GPIO_Init() {
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @retval None
+  * @return Nothing.
   */
 void Error_Handler() {
 	while(1) {
@@ -391,7 +391,7 @@ void Error_Handler() {
 
 /**
   * @brief  Puts the system into sleep mode.
-  * @retval None
+  * @return Nothing.
   */
 void GW_Sleep() {
 	gwloader_call_nonblock(0x7D);

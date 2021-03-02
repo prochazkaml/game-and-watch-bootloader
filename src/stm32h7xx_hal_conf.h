@@ -493,7 +493,7 @@
   *         which reports the name of the source file and the source
   *         line number of the call that failed.
   *         If expr is true, it returns no value.
-  * @retval None
+  * @return Nothing.
   */
   #define assert_param(expr) ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
 /* Exported functions ------------------------------------------------------- */

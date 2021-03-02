@@ -135,7 +135,7 @@
   *         Initialize the FPU setting and  vector table location
   *         configuration.
   * @param  None
-  * @retval None
+  * @return Nothing.
   */
 void SystemInit (void)
 {
@@ -307,7 +307,7 @@ void SystemInit (void)
   *         - The result of this function could be not correct when using fractional
   *           value for HSE crystal.
   * @param  None
-  * @retval None
+  * @return Nothing.
   */
 void SystemCoreClockUpdate (void)
 {
