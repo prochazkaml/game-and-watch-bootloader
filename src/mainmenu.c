@@ -68,15 +68,19 @@ void update_screen() {
 	lcd_update();
 }
 
-void decode_bmp(unsigned char *bmp, int id) {
+void copy_bmp(uint16_t *imgdata, int id) {
 	id %= 3;
 	
-	unsigned char *imgdata = bmp + hourglass_bmp[0x0A];
 	int i;
 	
 	for(i = 0; i < 64 * 48; i++) {
-		cache[id].bitmap[i] = imgdata[i * 2] | (imgdata[i * 2 + 1] << 8);
+		cache[id].bitmap[i] = imgdata[i];
 	}
+}
+
+void decode_bmp(unsigned char *bmp, int id) {
+	uint16_t *imgdata = (uint16_t *)(bmp + bmp[0x0A]);
+	copy_bmp(imgdata, id);
 }
 
 void init_hb_info(int id) {
@@ -92,7 +96,7 @@ void init_hb_info(int id) {
 	cache[i].author[0] = 0;
 	cache[i].version[0] = 0;
 	
-	decode_bmp(hourglass_bmp, i);
+	copy_bmp((uint16_t *) hourglass_bmp, i);
 }
 
 int update_hb_info_ctr = 0;
@@ -211,7 +215,7 @@ void update_hb_info() {
 						sprintf(cache[i].author, "The manifest file is missing.");
 						cache[i].version[0] = 0;
 						
-						decode_bmp(default_bmp, i);
+						copy_bmp((uint16_t *) default_bmp, i);
 					}
 					
 					cache[i].load_status = 15;
@@ -227,7 +231,7 @@ void update_hb_info() {
 					gwloader_comm_buf[0] = 0;
 
 					if(cache[i].id_pending < 0) {
-						decode_bmp(default_bmp, i);
+						copy_bmp((uint16_t *) default_bmp, i);
 					}
 					
 					cache[i].load_status = 15;
