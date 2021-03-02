@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #include "lcd.h"
+#include "stm32.h"
 #include "font_basic.h"
 
 uint16_t framebuffer[320 * 240];
@@ -109,7 +110,9 @@ void lcd_print_rtl(char *str, int x, int y, int fg, int bg) {
 	lcd_print(str, x - strlen(str) * 8, y, fg, bg);
 }
 
-void lcd_init(SPI_HandleTypeDef *spi, LTDC_HandleTypeDef *ltdc) {
+void lcd_init() {
+	int i;
+
 	memset(framebuffer, 0, 320 * 240 * 2);
 	memset(fb_internal, 0, 320 * 240 * 2);
 
@@ -144,7 +147,6 @@ void lcd_init(SPI_HandleTypeDef *spi, LTDC_HandleTypeDef *ltdc) {
 	HAL_Delay(7);
 
 
-
 	// HAL_SPI_Transmit(spi, "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55", 10, 100);
 	// Lets go, bootup sequence.
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);
@@ -154,97 +156,28 @@ void lcd_init(SPI_HandleTypeDef *spi, LTDC_HandleTypeDef *ltdc) {
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);
 
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x08\x80", 2, 100);
-	HAL_Delay(2);
 
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x6E\x80", 2, 100);
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x80\x80", 2, 100);
-
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x68\x00", 2, 100);
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\xd0\x00", 2, 100);
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x1b\x00", 2, 100);
-
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\xe0\x00", 2, 100);
-
-
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x6a\x80", 2, 100);
-
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x80\x00", 2, 100);
-	HAL_Delay(2);
-	// CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	// HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	HAL_Delay(2);
-	HAL_SPI_Transmit(spi, (uint8_t *)"\x14\x80", 2, 100);
-	HAL_Delay(2);
+	uint8_t bootup_sequence[20] = {
+		0x08, 0x80, 0x6E, 0x80, 0x80, 0x80, 0x68, 0x00,
+		0xD0, 0x00, 0x1B, 0x00, 0xE0, 0x00, 0x6A, 0x80,
+		0x80, 0x00, 0x14, 0x80
+	};
+	
+	for(i = 0; i < 20; i += 2) {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+		HAL_Delay(2);
+		
+		HAL_SPI_Transmit(&hspi2, bootup_sequence + i, 2, 100);
+		HAL_Delay(2);		
+	}
+	
 	// CS
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
 
 
-	HAL_LTDC_SetAddress(ltdc,(uint32_t) &fb_internal, 0);
+	HAL_LTDC_SetAddress(&hltdc, (uint32_t) &fb_internal, 0);
 }
-/*
-void lcd_update_imm(LTDC_HandleTypeDef *ltdc) {
-	HAL_LTDC_Reload(ltdc, LTDC_RELOAD_VERTICAL_BLANKING);
-	curr_fb ^= 1;
-	framebuffer = framebuffers[curr_fb];
-}
-
-void lcd_update(LTDC_HandleTypeDef *ltdc) {
-	lcd_update_imm(ltdc);
-	HAL_Delay(20);
-}
-*/
 
 void lcd_update() {
 	memcpy(fb_internal, framebuffer, 320 * 240 * 2);

@@ -259,11 +259,11 @@ void initmenu(int num_of_hb, int capacity, int free) {
 	for(i = 0; i < 3; i++) cache[i].load_status = 0, cache[i].id = -1, cache[i].id_pending = -1, init_hb_info(i);
 }
 
-int mainmenu() {
+int mainmenu(char *title) {
 	int i;
 	
 	for(i = 0; i < 16 * 320; i++) framebuffer[i] = LCD_COLOR_GRAYSCALE(4);
-	lcd_print_centered("G&W Homebrew Loader Menu", 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+	lcd_print_centered(title, 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	while(1) {
 		uint32_t buttons = buttons_get();

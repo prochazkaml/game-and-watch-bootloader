@@ -11,5 +11,5 @@ typedef struct {
 extern HomebrewEntry cache[3];
 
 void initmenu(int num_of_hb, int free, int capacity);
-int mainmenu();
+int mainmenu(char *title);
 void mainmenu_finish();

@@ -34,7 +34,7 @@
   * @retval int
   */
 int main() {
-	int card_capacity_mb, card_free_mb, maxselection = 0;
+	int card_capacity_mb, card_free_mb, direntries = 0;
 	
 	// Reset of all peripherals, Initializes the Flash interface and the Systick.
 
@@ -59,7 +59,7 @@ int main() {
 
 	// Initialize LCD
 	
-	lcd_init(&hspi2, &hltdc);
+	lcd_init();
 	lcd_backlight_on();
 
 	// Get SD card capacity
@@ -69,6 +69,8 @@ int main() {
 
 	gwloader_call(0x01);
 
+	// Convert sectors to megabytes
+	
 	uint64_t tmp;
 	
 	tmp = gwloader_comm_buf_word[2];
@@ -89,13 +91,12 @@ int main() {
 
 	// Parse the directory
 	
-	uint8_t c;
 	uint8_t *ptr = dir_buffer;
 	
-	while((c = *ptr)) {
-		if(c == 2) {
-			directory_names[maxselection] = ptr + 1;
-			maxselection++;
+	while(*ptr) {
+		if((*ptr) == 2) {
+			directory_names[direntries] = ptr + 1;
+			direntries++;
 		}
 		
 		*ptr = 0;
@@ -104,7 +105,7 @@ int main() {
 		while(*ptr >= 0x20) ptr++;
 	}
 	
-	if(maxselection == 0) {
+	if(direntries == 0) {
 		lcd_print_centered("There is no homebrew on the SD card.", 160, 108, 0xFFFF, 0x0000);
 		lcd_print_centered("Please press the power button", 160, 116, 0xFFFF, 0x0000);
 		lcd_print_centered("to turn off the device.", 160, 124, 0xFFFF, 0x0000);
@@ -112,10 +113,12 @@ int main() {
 		while(1) buttons_get();
 	}
 	
-	initmenu(maxselection, card_capacity_mb, card_free_mb);
+	// Draw the main menu
 	
-	while (1) {
-		int selection = mainmenu();
+	initmenu(direntries, card_capacity_mb, card_free_mb);
+	
+	while(1) {
+		int selection = mainmenu("G&W Homebrew Loader Menu");
 		
 		if(selection >= 0) start_flash_process(selection);
 	}
