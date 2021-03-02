@@ -106,6 +106,7 @@ void start_flash_process(int selection) {
 	if(!gwloader_call_catcherr(0x02)) {
 		lcd_draw_window(280, 64);
 		lcd_print_centered("Erasing external flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+		lcd_print_centered("This can take a while.", 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 		lcd_update();
 		
 		OSPI_Init(&hospi1, SPI_MODE, VENDOR_MX);

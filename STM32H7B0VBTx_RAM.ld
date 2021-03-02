@@ -85,7 +85,6 @@ SECTIONS
   {
     . = ALIGN(4);
     *(.gwloader)
-    *(.databuf)
     *(.lcd)
     . = ALIGN(4);
   }  > RAM
