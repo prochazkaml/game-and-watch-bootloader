@@ -34,12 +34,3 @@ uint8_t gwloader_call_catcherr(uint8_t call);
 void gwloader_call_nonblock(uint8_t call);
 int gwloader_call_isdone();
 int gwloader_call_isdone_ingore_missing();
-
-int gwopen(char *filename, char *mode);
-int gwread(void *ptr, int size);
-int gwwrite(void *ptr, int size);
-void gwclose();
-int gwtell();
-int gwseek(int offset, int whence);
-void gwchdir(char *dirname);
-void gwreaddir(uint8_t *ptr);
