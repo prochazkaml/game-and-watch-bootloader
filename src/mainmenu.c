@@ -16,6 +16,12 @@ HomebrewEntry cache[3];
 int selection, maxselection, scroll;
 int card_capacity_mb, card_free_mb;
 
+/**
+  * @brief  Draw a selection border.
+  * @param  i: Position on the screen (0-2).
+  * @param  color: Color of the border.
+  * @return Nothing.
+  */
 void draw_border(int i, int color) {
 	int j;
 
@@ -30,6 +36,10 @@ void draw_border(int i, int color) {
 	}
 }
 
+/**
+  * @brief  Draw the footer.
+  * @return Nothing.
+  */
 void draw_footer() {
 	int j;
 	char buffer[32];
@@ -48,6 +58,10 @@ void draw_footer() {
 	for(j = 16 * 320; j < 224 * 320; j++) framebuffer[j] = 0x0000;	
 }
 
+/**
+  * @brief  Update the homebrew information on the screen.
+  * @return Nothing.
+  */
 void update_screen() {
 	int i, j;
 
@@ -68,6 +82,11 @@ void update_screen() {
 	lcd_update();
 }
 
+/**
+  * @brief  Copy raw bitmap to the homebrew cache.
+  * @param  id: Homebrew cache ID (0-2).
+  * @return Nothing.
+  */
 void copy_bmp(uint16_t *imgdata, int id) {
 	id %= 3;
 	
@@ -78,11 +97,21 @@ void copy_bmp(uint16_t *imgdata, int id) {
 	}
 }
 
+/**
+  * @brief  Decode bitmap to the homebrew cache.
+  * @param  id: Homebrew cache ID (0-2).
+  * @return Nothing.
+  */
 void decode_bmp(unsigned char *bmp, int id) {
 	uint16_t *imgdata = (uint16_t *)(bmp + bmp[0x0A]);
 	copy_bmp(imgdata, id);
 }
 
+/**
+  * @brief  Initialize the loading process for homebrew information.
+  * @param  id: Homebrew ID.
+  * @return Nothing.
+  */
 void init_hb_info(int id) {
 	int i = id % 3;
 	
@@ -101,6 +130,10 @@ void init_hb_info(int id) {
 
 int update_hb_info_ctr = 0;
 
+/**
+  * @brief  Homebrew information loader. Uses non-blocking GWLoader calls.
+  * @return Nothing.
+  */
 void update_hb_info() {
 	int i = update_hb_info_ctr;
 	
@@ -246,12 +279,23 @@ void update_hb_info() {
 	}
 }
 
+/**
+  * @brief  Wait for the homebrew information to finish loading.
+  * @return Nothing.
+  */
 void mainmenu_finish() {
 	while(cache[0].load_status || cache[0].id_pending >= 0 ||
 			cache[1].load_status || cache[1].id_pending >= 0 ||
 			cache[2].load_status || cache[2].id_pending >= 0) update_hb_info();
 }
 
+/**
+  * @brief  Initialize the main menu.
+  * @param  num_of_hb: Number of homebrew entries in the directory_entry array.
+  * @param  capacity: Total capacity of the storage.
+  * @param  free: Free space of the storage.
+  * @return Nothing.
+  */
 void initmenu(int num_of_hb, int capacity, int free) {
 	int i;
 	
@@ -264,6 +308,11 @@ void initmenu(int num_of_hb, int capacity, int free) {
 	for(i = 0; i < 3; i++) cache[i].load_status = 0, cache[i].id = -1, cache[i].id_pending = -1, init_hb_info(i);
 }
 
+/**
+  * @brief  Main menu loop.
+  * @param  title: String to draw in the header.
+  * @return -1 if B button pressed, otherwise the ID of the homebrew to load.
+  */
 int mainmenu(char *title) {
 	int i;
 	

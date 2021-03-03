@@ -10,6 +10,11 @@
 #include "lcd.h"
 #include "stm32.h"
 
+/**
+  * @brief  Flash the selected homebrew onto the device.
+  * @param  selection: Homebrew ID.
+  * @return This function should never return.
+  */
 void start_flash_process(int selection) {
 	// Fade the screen
 	

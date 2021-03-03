@@ -7,8 +7,8 @@ static quad_mode_t g_quad_mode = SPI_MODE;
 static spi_chip_vendor_t g_vendor = VENDOR_MX;
 
 /**
-  * @brief  Sets the command lines based on the chip used.
-  * @param  cmd: The command definition.
+  * @brief  Set the command lines based on the chip used.
+  * @param  cmd: Command handle.
   * @param  quad_mode: SPI_MODE or QUAD_MODE. Depends on the connection.
   * @param  vendor: VENDOR_MX or VENDOR_ISSI. Depends on the chip used.
   * @param  has_address: Set to true if the chip has address lines.
@@ -36,6 +36,14 @@ void set_cmd_lines(OSPI_RegularCmdTypeDef *cmd, quad_mode_t quad_mode, spi_chip_
   }
 }
 
+/**
+  * @brief  Read raw data from the flash memory.
+  * @param  hospi: OSPI handle.
+  * @param  instruction: Flash instrucion. Refer to the flash datasheet.
+  * @param  data: Pointer to a data buffer.
+  * @param  len: Number of bytes to read.
+  * @return Nothing.
+  */
 void OSPI_ReadBytes(OSPI_HandleTypeDef *hospi, uint8_t instruction, uint8_t *data, size_t len)
 {
   OSPI_RegularCmdTypeDef  sCommand;
@@ -68,6 +76,16 @@ void OSPI_ReadBytes(OSPI_HandleTypeDef *hospi, uint8_t instruction, uint8_t *dat
   }
 }
 
+/**
+  * @brief  Write raw data to the flash memory.
+  * @param  hospi: OSPI handle.
+  * @param  instruction: Flash instrucion. Refer to the flash datasheet.
+  * @param  dummy_cycles: Number of cycles to wait.
+  * @param  data: Pointer to a data buffer.
+  * @param  len: Number of bytes to write.
+  * @param  quad_mode: SPI_MODE or QUAD_MODE. Depends on the connection.
+  * @return Nothing.
+  */
 void OSPI_WriteBytes(OSPI_HandleTypeDef *hospi, uint8_t instruction, uint8_t dummy_cycles, uint8_t *data, size_t len, quad_mode_t quad_mode)
 {
   OSPI_RegularCmdTypeDef  sCommand;
@@ -98,6 +116,13 @@ void OSPI_WriteBytes(OSPI_HandleTypeDef *hospi, uint8_t instruction, uint8_t dum
   }
 }
 
+/**
+  * @brief  Initialize OSPI.
+  * @param  hospi: OSPI handle.
+  * @param  quad_mode: SPI_MODE or QUAD_MODE. Depends on the connection.
+  * @param  vendor: VENDOR_MX or VENDOR_ISSI. Depends on the chip used.
+  * @return Nothing.
+  */
 void OSPI_Init(OSPI_HandleTypeDef *hospi, quad_mode_t quad_mode, spi_chip_vendor_t vendor)
 {
   if (vendor == VENDOR_ISSI) {
@@ -139,6 +164,11 @@ void OSPI_Init(OSPI_HandleTypeDef *hospi, quad_mode_t quad_mode, spi_chip_vendor
   }
 }
 
+/**
+  * @brief  Erase the entire flash.
+  * @param  hospi: OSPI handle.
+  * @return Nothing.
+  */
 void OSPI_ChipErase(OSPI_HandleTypeDef *hospi)
 {
   uint8_t status;
@@ -153,8 +183,12 @@ void OSPI_ChipErase(OSPI_HandleTypeDef *hospi)
   } while((status & 0x01) == 0x01);
 }
 
-
-// Erases a 64kB block
+/**
+  * @brief  Erase a 64 kB block.
+  * @param  hospi: OSPI handle.
+  * @param  address: Block address.
+  * @return Nothing.
+  */
 void OSPI_BlockErase(OSPI_HandleTypeDef *hospi, uint32_t address)
 {
   uint8_t status;
@@ -187,7 +221,12 @@ void OSPI_BlockErase(OSPI_HandleTypeDef *hospi, uint32_t address)
   } while((status & 0x01) == 0x01);
 }
 
-// Erases a 4kB sector
+/**
+  * @brief  Erase a 4 kB sector.
+  * @param  hospi: OSPI handle.
+  * @param  address: Sector address.
+  * @return Nothing.
+  */
 void OSPI_SectorErase(OSPI_HandleTypeDef *hospi, uint32_t address)
 {
   uint8_t status;
@@ -219,8 +258,6 @@ void OSPI_SectorErase(OSPI_HandleTypeDef *hospi, uint32_t address)
     OSPI_ReadBytes(hospi, 0x05, &status, 1);
   } while((status & 0x01) == 0x01);
 }
-
-
 
 void  _OSPI_Program(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, size_t buffer_size)
 {
@@ -267,6 +304,14 @@ void  _OSPI_Program(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer
   } while((status & 0x01) == 0x01);
 }
 
+/**
+  * @brief  Write data to the flash.
+  * @param  hospi: OSPI handle.
+  * @param  address: Destination address.
+  * @param  buffer: Pointer to a data buffer.
+  * @param  buffer_size: Number of bytes to write.
+  * @return Nothing.
+  */
 void OSPI_Program(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, int32_t buffer_size)
 {
   unsigned dest_page = address / 256;
@@ -315,6 +360,14 @@ void _OSPI_Read(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, si
   }
 }
 
+/**
+  * @brief  Read data from the flash.
+  * @param  hospi: OSPI handle.
+  * @param  address: Source address.
+  * @param  buffer: Pointer to a data buffer.
+  * @param  buffer_size: Number of bytes to read.
+  * @return Nothing.
+  */
 void OSPI_Read(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, int32_t buffer_size)
 {
   unsigned iterations = buffer_size / 256;
@@ -326,61 +379,12 @@ void OSPI_Read(OSPI_HandleTypeDef *hospi, uint32_t address, uint8_t *buffer, int
   }
 }
 
+/**
+  * @brief  Unlock flash write protection.
+  * @param  hospi: OSPI handle.
+  * @return Nothing.
+  */
 void OSPI_NOR_WriteEnable(OSPI_HandleTypeDef *hospi)
 {
   OSPI_WriteBytes(hospi, 0x06, 0, NULL, 0, g_quad_mode);
-}
-
-
-void OSPI_EnableMemoryMappedMode(OSPI_HandleTypeDef *spi)
-{
-  OSPI_MemoryMappedTypeDef sMemMappedCfg;
-
-  OSPI_RegularCmdTypeDef sCommand = {
-    .Instruction = 0x0b, // FAST READ
-    .SIOOMode = HAL_OSPI_SIOO_INST_EVERY_CMD,
-    .AlternateBytesMode = HAL_OSPI_ALTERNATE_BYTES_NONE,
-    .OperationType = HAL_OSPI_OPTYPE_READ_CFG,
-    .FlashId = 0,
-    .InstructionDtrMode = HAL_OSPI_INSTRUCTION_DTR_DISABLE,
-    .InstructionSize = HAL_OSPI_INSTRUCTION_8_BITS,
-    .AddressDtrMode = HAL_OSPI_ADDRESS_DTR_DISABLE,
-    .DataDtrMode = HAL_OSPI_DATA_DTR_DISABLE,
-    .DQSMode = HAL_OSPI_DQS_DISABLE,
-    .AddressSize = HAL_OSPI_ADDRESS_24_BITS,
-    .SIOOMode = HAL_OSPI_SIOO_INST_EVERY_CMD,
-    .DummyCycles = 8,
-    .AlternateBytesSize = HAL_OSPI_ALTERNATE_BYTES_8_BITS,
-    .AlternateBytes = 0x00,
-    .NbData = 0,
-    .AlternateBytes = 0x00,
-  };
-
-  set_cmd_lines(&sCommand, g_quad_mode, g_vendor, 1, 1);
-
-  if (g_quad_mode) {
-    sCommand.Instruction = 0xeb;
-    sCommand.DummyCycles = 6;
-  }
-
-  /* Memory-mapped mode configuration for Linear burst read operations */
-  if (HAL_OSPI_Command(spi, &sCommand, HAL_OSPI_TIMEOUT_DEFAULT_VALUE) !=
-      HAL_OK) {
-    Error_Handler();
-  }
-
-  // Use read instruction for write (in order to not alter the flash by accident)
-  sCommand.OperationType = HAL_OSPI_OPTYPE_WRITE_CFG;
-  if (HAL_OSPI_Command(spi, &sCommand, HAL_OSPI_TIMEOUT_DEFAULT_VALUE) !=
-      HAL_OK) {
-    Error_Handler();
-  }
-
-  /*Disable timeout counter for memory mapped mode*/
-  sMemMappedCfg.TimeOutActivation = HAL_OSPI_TIMEOUT_COUNTER_DISABLE;
-  sMemMappedCfg.TimeOutPeriod = 0;
-  /*Enable memory mapped mode*/
-  if (HAL_OSPI_MemoryMapped(spi, &sMemMappedCfg) != HAL_OK) {
-    Error_Handler();
-  }
 }

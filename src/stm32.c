@@ -26,7 +26,7 @@ DMA_HandleTypeDef hdma_sai1_a;
 SPI_HandleTypeDef hspi2;
 
 /**
-  * @brief System Clock Configuration
+  * @brief System Clock Configuration.
   * @return Nothing.
   */
 void SystemClock_Config() {
@@ -124,7 +124,7 @@ void MX_NVIC_Init() {
 }
 
 /**
-  * @brief LTDC Initialization Function
+  * @brief LTDC Initialization Function.
   * @return Nothing.
   */
 void MX_LTDC_Init() {
@@ -193,7 +193,7 @@ void MX_LTDC_Init() {
 }
 
 /**
-  * @brief OCTOSPI1 Initialization Function
+  * @brief OCTOSPI1 Initialization Function.
   * @return Nothing.
   */
 void MX_OCTOSPI1_Init() {
@@ -232,7 +232,7 @@ void MX_OCTOSPI1_Init() {
 }
 
 /**
-  * @brief SAI1 Initialization Function
+  * @brief SAI1 Initialization Function.
   * @return Nothing.
   */
 void MX_SAI1_Init() {
@@ -254,7 +254,7 @@ void MX_SAI1_Init() {
 }
 
 /**
-  * @brief SPI2 Initialization Function
+  * @brief SPI2 Initialization Function.
   * @return Nothing.
   */
 void MX_SPI2_Init() {
@@ -288,7 +288,7 @@ void MX_SPI2_Init() {
 }
 
 /**
-  * @brief Enables DMA controller clock
+  * @brief Enables DMA controller clock.
   * @return Nothing.
   */
 void MX_DMA_Init() {
@@ -302,7 +302,7 @@ void MX_DMA_Init() {
 }
 
 /**
-  * @brief GPIO Initialization Function
+  * @brief GPIO Initialization Function.
   * @return Nothing.
   */
 void MX_GPIO_Init() {
@@ -390,7 +390,7 @@ void Error_Handler() {
 }
 
 /**
-  * @brief  Puts the system into sleep mode.
+  * @brief  Put the system into sleep mode.
   * @return Nothing.
   */
 void GW_Sleep() {
@@ -406,6 +406,3 @@ void GW_Sleep() {
 	
 	while(1) HAL_NVIC_SystemReset();
 }
-
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

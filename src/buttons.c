@@ -8,7 +8,7 @@
 int old_buttons = 0;
 
 /**
-  * @brief  Reads the button presses and handles the sleep button.
+  * @brief  Read the button presses and handle the sleep button.
   * @return Button bitfield.
   */
 uint32_t buttons_get() {

@@ -12,6 +12,11 @@ char *submenu_names[SUBMENU_ENTRIES] = {
 	"Dump flash", "Battery status", "Reboot device", "Suspend device"
 };
 
+/**
+  * @brief  Popup menu loop.
+  * @param  title: String to draw in the header.
+  * @return Nothing.
+  */
 void submenu() {
 	lcd_fade();
 	
