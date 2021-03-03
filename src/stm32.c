@@ -6,7 +6,6 @@
 #include "stm32h7xx_hal.h"
 
 uint8_t *directory_names[1024];
-uint8_t dir_buffer[16384];
 
 uint8_t data_buffer[64 * 1024];
 

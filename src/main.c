@@ -83,6 +83,8 @@ int main() {
 
 	// Load the directory
 	
+	uint8_t dir_buffer[16384];
+
 	lcd_print_centered("Loading root directory...", 160, 116, 0xFFFF, 0x0000);
 	lcd_update();
 
