@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "stm32h7xx_hal.h"
 #include "flashload.h"
@@ -11,24 +12,84 @@
 #include "stm32.h"
 
 /**
-  * @brief  Flash the selected homebrew onto the device.
-  * @param  selection: Homebrew ID.
-  * @return This function should never return.
+  * @brief  Wait for any processes to finish.
+  * @return Nothing.
   */
-void start_flash_process(int selection) {
-	// Fade the screen
-	
-	int i, j;
-	
-	lcd_fade();
-	
-	// Wait for any processes to finish
-	
+void wait() {
 	lcd_draw_window(200, 32);
 	lcd_print_centered("Please wait...", 160, 116, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 	lcd_update();
 
 	mainmenu_finish();
+}
+
+/**
+  * @brief  Dump the device.
+  * @return Nothing.
+  */
+void start_dump_process() {
+	wait();
+	
+	int i;
+	
+	// Dump internal flash
+	
+	gwloader_comm_buf[1] = 0;
+	gwloader_comm_buf_word[3] = (uint32_t) intflash_name;
+	gwloader_call(GWL_OPEN_WRITE);
+	
+	gwloader_comm_buf_word[2] = 0x2000;
+	gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
+
+	lcd_draw_window(280, 64);
+	lcd_print_centered("Dumping internal flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+	lcd_print_centered("(131072 bytes, 16 8k sectors)", 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+
+	for(i = 0; i < 16; i++) {
+		lcd_draw_progress_bar(i, 16, 60, 124, 200, 16);
+		lcd_update();
+
+		memcpy(data_buffer, (uint8_t *)(0x08000000 + i * 0x2000), 0x2000);
+		gwloader_call(GWL_WRITE);
+		
+	}
+	
+	gwloader_call(GWL_CLOSE);
+
+	// Dump external flash
+	
+	gwloader_comm_buf[1] = 0;
+	gwloader_comm_buf_word[3] = (uint32_t) extflash_name;
+	gwloader_call(GWL_OPEN_WRITE);
+		
+	gwloader_comm_buf_word[2] = 0x10000;
+	gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
+
+	lcd_draw_window(280, 64);
+	lcd_print_centered("Dumping external flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+	lcd_print_centered("(1048576 bytes, 16 64k sectors)", 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+
+	for(i = 0; i < 16; i++) {
+		lcd_draw_progress_bar(i, 16, 60, 124, 200, 16);
+		lcd_update();
+
+		OSPI_Read(&hospi1, i * 0x10000, data_buffer, 0x10000);
+		gwloader_call(GWL_WRITE);
+		
+	}
+	
+	gwloader_call(GWL_CLOSE);
+
+}
+	
+/**
+  * @brief  Flash the selected homebrew onto the device.
+  * @param  selection: Homebrew ID.
+  * @return This function should never return.
+  */
+void start_flash_process(int selection) {
+	lcd_fade();
+	wait();
 	
 	// Enter the correct directory and open the internal flash file
 	
@@ -85,6 +146,8 @@ void start_flash_process(int selection) {
 	gwloader_comm_buf_word[2] = 0x2000;
 	gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
 	
+	int i, j;
+	
 	for(i = 0; i < sectors; i++) {
 		lcd_draw_progress_bar(i, sectors, 60, 124, 200, 16);
 		lcd_update();
@@ -114,9 +177,6 @@ void start_flash_process(int selection) {
 		lcd_print_centered("This can take a while.", 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 		lcd_update();
 		
-		OSPI_Init(&hospi1, SPI_MODE, VENDOR_MX);
-				
-		OSPI_NOR_WriteEnable(&hospi1);
 		OSPI_ChipErase(&hospi1);
 		
 		size = gwloader_comm_buf_word[1];

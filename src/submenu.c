@@ -4,6 +4,7 @@
 #include "lcd.h"
 #include "gwloader.h"
 #include "buttons.h"
+#include "flashload.h"
 
 #define SUBMENU_ENTRIES 4
 #define MENU_WIDTH 128
@@ -41,6 +42,10 @@ void submenu() {
 		
 		if(buttons & B_A) {
 			switch(selection) {
+				case 0:
+					start_dump_process();
+					return;
+				
 				case 2:
 					gwloader_call(0x7F);
 					break;

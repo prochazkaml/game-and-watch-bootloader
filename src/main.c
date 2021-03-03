@@ -62,6 +62,11 @@ int main() {
 	lcd_init();
 	lcd_backlight_on();
 
+	// Inintialize flash
+
+	OSPI_Init(&hospi1, SPI_MODE, VENDOR_MX);
+	OSPI_NOR_WriteEnable(&hospi1);
+	
 	// Get SD card capacity
 	
 	lcd_print_centered("Detecting SD card...", 160, 116, 0xFFFF, 0x0000);
