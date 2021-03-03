@@ -33,13 +33,13 @@ void start_flash_process(int selection) {
 	// Enter the correct directory and open the internal flash file
 	
 	gwloader_comm_buf_word[3] = (uint32_t) directory_names[selection];
-	gwloader_call(0x0C);
+	gwloader_call(GWL_CHDIR);
 	
 	gwloader_comm_buf_word[3] = (uint32_t) intflash_name;
 	
-	if(gwloader_call_catcherr(0x02)) {
+	if(gwloader_call_catcherr(GWL_OPEN_READ)) {
 		gwloader_comm_buf_word[3] = (uint32_t) updir_name;
-		gwloader_call(0x0C);
+		gwloader_call(GWL_CHDIR);
 
 		lcd_draw_window(240, 40);
 		lcd_print_centered("This homebrew is corrupted.", 160, 112, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
@@ -89,7 +89,7 @@ void start_flash_process(int selection) {
 		lcd_draw_progress_bar(i, sectors, 60, 124, 200, 16);
 		lcd_update();
 		
-		gwloader_call(0x04);
+		gwloader_call(GWL_READ);
 		
 		for(j = 0; j < 0x2000; j += 16) {
 			if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, 0x08000000 + i * 0x2000 + j, ((uint32_t)(data_buffer + j))) != HAL_OK) {
@@ -101,14 +101,14 @@ void start_flash_process(int selection) {
 	lcd_draw_progress_bar(sectors, sectors, 60, 124, 200, 16);
 	lcd_update();
 	
-	gwloader_call(0x06);
+	gwloader_call(GWL_CLOSE);
 	HAL_FLASH_Lock();
 	
 	// Write the external flash, if required
 	
 	gwloader_comm_buf_word[3] = (uint32_t) extflash_name;
 	
-	if(!gwloader_call_catcherr(0x02)) {
+	if(!gwloader_call_catcherr(GWL_OPEN_READ)) {
 		lcd_draw_window(280, 64);
 		lcd_print_centered("Erasing external flash...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 		lcd_print_centered("This can take a while.", 160, 108, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
@@ -135,7 +135,7 @@ void start_flash_process(int selection) {
 			lcd_draw_progress_bar(i, sectors, 60, 124, 200, 16);
 			lcd_update();
 			
-			gwloader_call(0x04);
+			gwloader_call(GWL_READ);
 			
 //			OSPI_BlockErase(&hospi1, i * 0x10000);	// Doesn't work right :/
 			OSPI_Program(&hospi1, i * 0x10000, data_buffer, 0x10000);
@@ -144,12 +144,12 @@ void start_flash_process(int selection) {
 		lcd_draw_progress_bar(sectors, sectors, 60, 124, 200, 16);
 		lcd_update();
 		
-		gwloader_call(0x06);
+		gwloader_call(GWL_CLOSE);
 	}
 	
 	lcd_draw_window(280, 64);
 	lcd_print_centered("Rebooting...", 160, 100, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 	lcd_update();
 	
-	gwloader_call(0x7F);
+	gwloader_call(GWL_RESET_HALT);
 }

@@ -67,7 +67,7 @@ int main() {
 	lcd_print_centered("Detecting SD card...", 160, 116, 0xFFFF, 0x0000);
 	lcd_update();
 
-	gwloader_call(0x01);
+	gwloader_call(GWL_DETECTION_CHECK);
 
 	// Convert sectors to megabytes
 	
@@ -87,7 +87,7 @@ int main() {
 	lcd_update();
 
 	gwloader_comm_buf_word[3] = (uint32_t) dir_buffer;
-	gwloader_call(0x0D);
+	gwloader_call(GWL_READ_DIR);
 
 	// Parse the directory
 	

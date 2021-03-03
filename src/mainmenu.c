@@ -147,20 +147,20 @@ void update_hb_info() {
 		switch(cache[i].load_status) {
 			case 1:		// Enter the directory
 				gwloader_comm_buf_word[3] = (uint32_t) directory_names[cache[i].id];
-				gwloader_call_nonblock(0x0C);
+				gwloader_call_nonblock(GWL_CHDIR);
 				cache[i].load_status++;
 				break;
 				
 			case 3:		// Open then manifest file for reading
 				gwloader_comm_buf_word[3] = (uint32_t) manifest_name;
-				gwloader_call_nonblock(0x02);
+				gwloader_call_nonblock(GWL_OPEN_READ);
 				cache[i].load_status++;
 				break;
 				
 			case 5:		// Read the manifest file
 				gwloader_comm_buf_word[2] = sizeof(data_buffer);
 				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				gwloader_call_nonblock(0x04);
+				gwloader_call_nonblock(GWL_READ);
 				cache[i].load_status++;
 				break;
 
@@ -196,20 +196,20 @@ void update_hb_info() {
 					}
 				}
 				
-				gwloader_call_nonblock(0x06);
+				gwloader_call_nonblock(GWL_CLOSE);
 				cache[i].load_status++;
 				break;
 				
 			case 9:		// Open the homebrew icon
 				gwloader_comm_buf_word[3] = (uint32_t) icon_name;
-				gwloader_call_nonblock(0x02);
+				gwloader_call_nonblock(GWL_OPEN_READ);
 				cache[i].load_status++;
 				break;
 				
 			case 11:	// Read the icon
 				gwloader_comm_buf_word[2] = sizeof(data_buffer);
 				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				gwloader_call_nonblock(0x04);
+				gwloader_call_nonblock(GWL_READ);
 				cache[i].load_status++;
 				break;
 
@@ -218,13 +218,13 @@ void update_hb_info() {
 					decode_bmp(data_buffer, i);
 				}
 				
-				gwloader_call_nonblock(0x06);
+				gwloader_call_nonblock(GWL_CLOSE);
 				cache[i].load_status++;
 				break;
 				
 			case 15:		// Exit the directory
 				gwloader_comm_buf_word[3] = (uint32_t) updir_name;
-				gwloader_call_nonblock(0x0C);
+				gwloader_call_nonblock(GWL_CHDIR);
 				cache[i].load_status++;
 				break;
 				
@@ -240,7 +240,7 @@ void update_hb_info() {
 				break;
 				
 			case 4:		// Special handler if the manifest file doesn't exist
-				if(gwloader_comm_buf[0] == 0x81) {
+				if(gwloader_comm_buf[0] == GWL_ERR_FILE_NOT_FOUND) {
 					gwloader_comm_buf[0] = 0;
 					
 					if(cache[i].id_pending < 0) {
@@ -260,7 +260,7 @@ void update_hb_info() {
 				break;
 				
 			case 10:	// Special handler if the icon file doesn't exist
-				if(gwloader_comm_buf[0] == 0x81) {
+				if(gwloader_comm_buf[0] == GWL_ERR_FILE_NOT_FOUND) {
 					gwloader_comm_buf[0] = 0;
 
 					if(cache[i].id_pending < 0) {

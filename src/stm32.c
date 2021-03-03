@@ -394,7 +394,7 @@ void Error_Handler() {
   * @return Nothing.
   */
 void GW_Sleep() {
-	gwloader_call_nonblock(0x7D);
+	gwloader_call_nonblock(GWL_HALT);
 	
 	HAL_Delay(100);
 
