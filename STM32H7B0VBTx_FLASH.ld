@@ -71,21 +71,11 @@ MEMORY
 /* Define output sections */
 SECTIONS
 {
-  
-  /* The startup code goes first into ITCMRAM */
-  .isr_vector :
-  {
-    . = ALIGN(4);
-    KEEP(*(.isr_vector)) /* Startup code */
-    . = ALIGN(4);
-  } >ITCMRAM
-
-
   .lcd :
   {
     . = ALIGN(4);
-    *(.gwloader)
     *(.lcd)
+    *(.audio)
     . = ALIGN(4);
   }  > RAM
 
@@ -95,7 +85,15 @@ SECTIONS
     _extflash = .;       /* define a global symbols to point at the external flash */
   } >EXTFLASH
 
-  /* The program code and other data goes into ITCMRAM */
+  /* The startup code goes first into FLASH */
+  .isr_vector :
+  {
+    . = ALIGN(4);
+    KEEP(*(.isr_vector)) /* Startup code */
+    . = ALIGN(4);
+  } >FLASH
+
+  /* The program code and other data goes into FLASH */
   .text :
   {
     . = ALIGN(4);
@@ -110,44 +108,44 @@ SECTIONS
 
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
-  } >ITCMRAM
+  } >FLASH
 
-  /* Constant data goes into DTCMRAM */
+  /* Constant data goes into FLASH */
   .rodata :
   {
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(4);
-  } >DTCMRAM
+  } >FLASH
 
-  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >DTCMRAM
+  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
   .ARM : {
     __exidx_start = .;
     *(.ARM.exidx*)
     __exidx_end = .;
-  } >DTCMRAM
+  } >FLASH
 
   .preinit_array     :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-  } >DTCMRAM
+  } >FLASH
   .init_array :
   {
     PROVIDE_HIDDEN (__init_array_start = .);
     KEEP (*(SORT(.init_array.*)))
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
-  } >DTCMRAM
+  } >FLASH
   .fini_array :
   {
     PROVIDE_HIDDEN (__fini_array_start = .);
     KEEP (*(SORT(.fini_array.*)))
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
-  } >DTCMRAM
+  } >FLASH
 
   /* used by the startup to initialize data */
   _sidata = LOADADDR(.data);
@@ -156,14 +154,13 @@ SECTIONS
   .data : 
   {
     . = ALIGN(4);
-    /* Note: _sdata and _edata are placed together to disable data initialization from FLASH */
     _sdata = .;        /* create a global symbol at data start */
-    _edata = .;        /* define a global symbol at data end */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
     . = ALIGN(4);
-  } >DTCMRAM
+    _edata = .;        /* define a global symbol at data end */
+  } >DTCMRAM AT> FLASH
 
   
   /* Uninitialized data section */
@@ -193,14 +190,6 @@ SECTIONS
     . = ALIGN(8);
   } >DTCMRAM
 
-  ._persistent :
-  {
-    . = ALIGN(8);
-    *(.persistent)
-    . = ALIGN(8);
-  } >DTCMRAM
-
-  
   
 
   /* Remove information from the standard libraries */
@@ -213,4 +202,5 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
+
 

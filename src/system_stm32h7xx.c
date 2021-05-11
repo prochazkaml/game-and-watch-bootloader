@@ -268,8 +268,6 @@ void SystemInit (void)
 #endif
 
 #endif /*DUAL_CORE && CORE_CM4*/
-
-  SCB->VTOR = CD_ITCMRAM_BASE  | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal ITCM-RAM */
 }
 
 /**
