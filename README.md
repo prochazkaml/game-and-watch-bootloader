@@ -1,3 +1,5 @@
+# QUICK HEADS-UP: THIS PROGRAM DOES NOT WORK YET. LIKE AT ALL.
+
 # game-and-watch-bootloader
 
 A free and open source homebrew launcher for the Game & Watch.
