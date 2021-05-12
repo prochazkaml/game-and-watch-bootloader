@@ -64,6 +64,8 @@ int main() {
 	OSPI_NOR_WriteEnable(&hospi1);
 	OSPI_EnableMemoryMappedMode(&hospi1);
 
+	data_buffer[0] = 0x69;
+
 	if(fsmount((uint8_t*)0x90000000)) {
 		lcd_print_centered("Error! File system is corrupted!", 160, 116, 0xFFFF, 0x0000);
 		lcd_update();

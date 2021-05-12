@@ -5,7 +5,7 @@
 #include "stm32.h"
 #include "font_basic.h"
 
-uint16_t framebuffer[320 * 240];
+uint16_t framebuffer[320 * 240] __attribute__((section (".lcd")));
 uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 
 /**

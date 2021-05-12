@@ -71,11 +71,11 @@ MEMORY
 /* Define output sections */
 SECTIONS
 {
-  .lcd :
+  .sram :
   {
     . = ALIGN(4);
+    *(.databuf)
     *(.lcd)
-    *(.audio)
     . = ALIGN(4);
   }  > RAM
 

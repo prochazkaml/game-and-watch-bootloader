@@ -44,6 +44,7 @@ void draw_footer() {
 	char buffer[32];
 	
 	// Draw the footer
+
 	for(j = 224 * 320; j < 240 * 320; j++) framebuffer[j] = LCD_COLOR_GRAYSCALE(4);
 	sprintf(buffer, "%d/%d", selection + 1, maxselection);
 	lcd_print_rtl(buffer, 312, 228, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
@@ -52,7 +53,9 @@ void draw_footer() {
 	lcd_print(buffer, 8, 228, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	// Clear the screen
-	for(j = 16 * 320; j < 224 * 320; j++) framebuffer[j] = 0x0000;	
+
+	for(j = 16 * 320; j < 224 * 320; j++)
+		framebuffer[j] = 0x0000;	
 }
 
 /**
@@ -65,6 +68,7 @@ void update_screen() {
 	draw_footer();
 	
 	// Draw the boxes, text and icons
+
 	for(i = 0; i < ((maxselection < 3) ? maxselection : 3); i++) {
 		draw_border(i, (i == (selection - scroll)) ? 0xFFFF : LCD_COLOR_GRAYSCALE(4));
 		
@@ -90,9 +94,8 @@ void copy_bmp(uint16_t *imgdata, int id) {
 	
 	int i;
 	
-	for(i = 0; i < 64 * 48; i++) {
+	for(i = 0; i < 64 * 48; i++)
 		cache[id].bitmap[i] = imgdata[i];
-	}
 }
 
 /**
@@ -102,8 +105,7 @@ void copy_bmp(uint16_t *imgdata, int id) {
   * @return Nothing.
   */
 void decode_bmp(unsigned char *bmp, int id) {
-	uint16_t *imgdata = (uint16_t *)(bmp + bmp[0x0A]);
-	copy_bmp(imgdata, id);
+	copy_bmp((uint16_t *)(bmp + bmp[0x0A]), id);
 }
 
 /**
@@ -120,7 +122,7 @@ void hb_error(int id, char *msg) {
 
 /**
   * @brief  Load homebrew info to the homebrew cache.
-  * @param  id: Homebrew cache ID (0-2).
+  * @param  id: Homebrew ID.
   * @param  dir: Directory name.
   * @return Nothing.
   */
@@ -131,7 +133,11 @@ void load_hb_info(int id, char *dir) {
 
 	int i = id % 3;
 
+	// Check if this homebrew ID has already been loaded
+
 	if(cache[i].id != id) {
+		// If it hasn't, then enter its directory and load the manifest & icon
+
 		if(!fschdir(dir)) {
 			if((manifest = fsloadfile("MANIFEST.TXT", &size)) != NULL) {
 				// Use default values first
