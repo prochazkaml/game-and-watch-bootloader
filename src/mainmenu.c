@@ -1,20 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "mainmenu.h"
 
 #include "buttons.h"
 #include "lcd.h"
-#include "gwloader.h"
 #include "stm32.h"
+#include "fslib.h"
 
 #include "default.h"
-#include "hourglass.h"
 
 HomebrewEntry cache[3];
 
 int selection, maxselection, scroll;
-int card_capacity_mb, card_free_mb;
 
 /**
   * @brief  Draw a selection border.
@@ -49,9 +48,7 @@ void draw_footer() {
 	sprintf(buffer, "%d/%d", selection + 1, maxselection);
 	lcd_print_rtl(buffer, 312, 228, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
-	sprintf(buffer, "%d.%02d GB total, %d.%02d GB free",
-		card_capacity_mb / 1000, card_capacity_mb % 1000 / 10,
-		card_free_mb / 1000, card_free_mb % 1000 / 10);
+	sprintf(buffer, "%d kB free", fsgetfreespace());
 	lcd_print(buffer, 8, 228, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	// Clear the screen
@@ -108,204 +105,13 @@ void decode_bmp(unsigned char *bmp, int id) {
 }
 
 /**
-  * @brief  Initialize the loading process for homebrew information.
-  * @param  id: Homebrew ID.
+  * @brief  Load homebrew info to the homebrew cache.
+  * @param  id: Homebrew ID (0-2).
+  * @param  dir: Directory name.
   * @return Nothing.
   */
-void init_hb_info(int id) {
-	int i = id % 3;
-	
-	if(id >= maxselection || (id == cache[i].id && cache[i].id_pending < 0)) {
-		return;
-	}
-	
-	cache[i].id_pending = id;
+void load_hb_info(int id, char *dir) {
 
-	cache[i].name[0] = 0;
-	cache[i].author[0] = 0;
-	cache[i].version[0] = 0;
-	
-	copy_bmp((uint16_t *) hourglass_bmp, i);
-}
-
-int update_hb_info_ctr = 0;
-
-/**
-  * @brief  Homebrew information loader. Uses non-blocking GWLoader calls.
-  * @return Nothing.
-  */
-void update_hb_info() {
-	int i = update_hb_info_ctr;
-	
-	if(cache[i].id_pending >= 0 && cache[i].load_status == 0) {
-		cache[i].load_status = 1;
-		cache[i].id = cache[i].id_pending;
-		cache[i].id_pending = -1;
-	}
-	
-	if(cache[i].load_status) {
-		switch(cache[i].load_status) {
-			case 1:		// Enter the directory
-				gwloader_comm_buf_word[3] = (uint32_t) directory_names[cache[i].id];
-				gwloader_call_nonblock(GWL_CHDIR);
-				cache[i].load_status++;
-				break;
-				
-			case 3:		// Open then manifest file for reading
-				gwloader_comm_buf_word[3] = (uint32_t) manifest_name;
-				gwloader_call_nonblock(GWL_OPEN_READ);
-				cache[i].load_status++;
-				break;
-				
-			case 5:		// Read the manifest file
-				gwloader_comm_buf_word[2] = sizeof(data_buffer);
-				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				gwloader_call_nonblock(GWL_READ);
-				cache[i].load_status++;
-				break;
-
-			case 7:		// Parse the manifest file and close it
-				// Zero-terminate the file
-				
-				if(cache[i].id_pending < 0) {
-					*(data_buffer + gwloader_comm_buf_word[1]) = 0;
-					
-					// Use default values first
-					
-					sprintf(cache[i].name, "Unnamed homebrew");
-					sprintf(cache[i].author, "Unknown author");
-					sprintf(cache[i].version, "1.0");
-					
-					// Parse each line
-					
-					char *manifest = strtok((char *) data_buffer, "\n");
-					
-					while(manifest != NULL) {
-						if(!memcmp("Name=", manifest, 5))
-							strncpy(cache[i].name, manifest + 5, 32);
-
-						if(!memcmp("Author=", manifest, 7))
-							strncpy(cache[i].author, manifest + 7, 32);
-							
-						if(!memcmp("Version=", manifest, 8))
-							strncpy(cache[i].version, manifest + 8, 32);
-							
-//						} else if(!memcmp("UsesFileAccess=", manifest, 15)) {
-
-						manifest = strtok(NULL, "\n");
-					}
-				}
-				
-				gwloader_call_nonblock(GWL_CLOSE);
-				cache[i].load_status++;
-				break;
-				
-			case 9:		// Open the homebrew icon
-				gwloader_comm_buf_word[3] = (uint32_t) icon_name;
-				gwloader_call_nonblock(GWL_OPEN_READ);
-				cache[i].load_status++;
-				break;
-				
-			case 11:	// Read the icon
-				gwloader_comm_buf_word[2] = sizeof(data_buffer);
-				gwloader_comm_buf_word[3] = (uint32_t) data_buffer;
-				gwloader_call_nonblock(GWL_READ);
-				cache[i].load_status++;
-				break;
-
-			case 13:	// Parse the icon and close it
-				if(cache[i].id_pending < 0) {
-					decode_bmp(data_buffer, i);
-				}
-				
-				gwloader_call_nonblock(GWL_CLOSE);
-				cache[i].load_status++;
-				break;
-				
-			case 15:		// Exit the directory
-				gwloader_comm_buf_word[3] = (uint32_t) updir_name;
-				gwloader_call_nonblock(GWL_CHDIR);
-				cache[i].load_status++;
-				break;
-				
-			case 17:		// End the process
-				cache[i].load_status = 0;
-				
-				update_hb_info_ctr++;
-				update_hb_info_ctr %= 3;
-				break;
-				
-			case 2: case 6: case 8: case 12: case 14: case 16: 	// Check if the command is done
-				if(gwloader_call_isdone()) cache[i].load_status++;
-				break;
-				
-			case 4:		// Special handler if the manifest file doesn't exist
-				if(gwloader_comm_buf[0] == GWL_ERR_FILE_NOT_FOUND) {
-					gwloader_comm_buf[0] = 0;
-					
-					if(cache[i].id_pending < 0) {
-						sprintf(cache[i].name, "Corrupted homebrew");
-						sprintf(cache[i].author, "The manifest file is missing.");
-						cache[i].version[0] = 0;
-						
-						copy_bmp((uint16_t *) default_bmp, i);
-					}
-					
-					cache[i].load_status = 15;
-				} else if(gwloader_call_isdone_ingore_missing()) {
-					cache[i].load_status++;
-					break;
-				}
-				
-				break;
-				
-			case 10:	// Special handler if the icon file doesn't exist
-				if(gwloader_comm_buf[0] == GWL_ERR_FILE_NOT_FOUND) {
-					gwloader_comm_buf[0] = 0;
-
-					if(cache[i].id_pending < 0) {
-						copy_bmp((uint16_t *) default_bmp, i);
-					}
-					
-					cache[i].load_status = 15;
-				} else if(gwloader_call_isdone_ingore_missing()) {
-					cache[i].load_status++;
-					break;
-				}
-		}
-	} else {
-		update_hb_info_ctr++;
-		update_hb_info_ctr %= 3;
-	}
-}
-
-/**
-  * @brief  Wait for the homebrew information to finish loading.
-  * @return Nothing.
-  */
-void mainmenu_finish() {
-	while(cache[0].load_status || cache[0].id_pending >= 0 ||
-			cache[1].load_status || cache[1].id_pending >= 0 ||
-			cache[2].load_status || cache[2].id_pending >= 0) update_hb_info();
-}
-
-/**
-  * @brief  Initialize the main menu.
-  * @param  num_of_hb: Number of homebrew entries in the directory_entry array.
-  * @param  capacity: Total capacity of the storage.
-  * @param  free: Free space of the storage.
-  * @return Nothing.
-  */
-void initmenu(int num_of_hb, int capacity, int free) {
-	int i;
-	
-	selection = 0;
-	scroll = 0;
-	card_capacity_mb = capacity;
-	card_free_mb = free;
-	maxselection = num_of_hb;
-
-	for(i = 0; i < 3; i++) cache[i].load_status = 0, cache[i].id = -1, cache[i].id_pending = -1, init_hb_info(i);
 }
 
 /**
@@ -315,7 +121,14 @@ void initmenu(int num_of_hb, int capacity, int free) {
   */
 int mainmenu(char *title) {
 	int i;
-	
+
+	DirEntry *dir = fsreaddir(1, &maxselection);
+	char buffer[16];
+
+//	maxselection = ???;
+	selection = 0;
+	scroll = 0;
+
 	for(i = 0; i < 16 * 320; i++) framebuffer[i] = LCD_COLOR_GRAYSCALE(4);
 	lcd_print_centered(title, 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
@@ -328,12 +141,16 @@ int mainmenu(char *title) {
 				selection = (maxselection - 1);
 				scroll = maxselection - 3;
 				if(scroll < 0) scroll = 0;
-				for(i = 0; i < 3; i++) init_hb_info(scroll + i);
+				for(i = 0; i < 3; i++) {
+					fatname_to_filename((char *)(&dir[scroll + i]), buffer);
+					load_hb_info(scroll + i, buffer);
+				}
 			}
 			
 			if(selection - scroll == -1) {
 				scroll--;
-				init_hb_info(selection);
+				fatname_to_filename((char *)(&dir[selection]), buffer);
+				load_hb_info(selection, buffer);
 			}
 				
 		}
@@ -343,24 +160,29 @@ int mainmenu(char *title) {
 			if(selection == maxselection) {
 				selection = 0;
 				scroll = 0;
-				for(i = 0; i < 3; i++) init_hb_info(i);
+				for(i = 0; i < 3; i++) {
+					fatname_to_filename((char *)(&dir[i]), buffer);
+					load_hb_info(i, buffer);
+				}
 			}
 				
 			if(selection - scroll == 3) {
-				init_hb_info(selection);
+				fatname_to_filename((char *)(&dir[selection]), buffer);
+				load_hb_info(selection, buffer);
 				scroll++;
 			}
 		}
 
 		if(buttons & B_A) {
+			free(dir);
 			return selection;
 		}
 		
 		if(buttons & B_B) {
+			free(dir);
 			return -1;
 		}
 		
 		update_screen();
-		update_hb_info();
 	}
 }

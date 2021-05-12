@@ -20,22 +20,18 @@
 #include <string.h>
 #include "stm32h7xx_hal.h"
 #include "stm32.h"
-#include "gwloader.h"
 #include "buttons.h"
 #include "flash.h"
 #include "lcd.h"
+#include "fslib.h"
 
-#include "submenu.h"
-#include "mainmenu.h"
-#include "flashload.h"
+//#include "mainmenu.h"
 
 /**
   * @brief  The application entry point.
   * @return Nothing.
   */
 int main() {
-	int card_capacity_mb, card_free_mb, direntries = 0;
-	
 	// Reset of all peripherals, Initializes the Flash interface and the Systick.
 
 	HAL_Init();
@@ -66,70 +62,21 @@ int main() {
 
 	OSPI_Init(&hospi1, SPI_MODE, VENDOR_MX);
 	OSPI_NOR_WriteEnable(&hospi1);
-	
-	// Get SD card capacity
-	
-	lcd_print_centered("Detecting SD card...", 160, 116, 0xFFFF, 0x0000);
-	lcd_update();
+	OSPI_EnableMemoryMappedMode(&hospi1);
 
-	gwloader_call(GWL_DETECTION_CHECK);
-
-	// Convert sectors to megabytes
-	
-	uint64_t tmp;
-	
-	tmp = gwloader_comm_buf_word[2];
-	tmp = tmp * 512 / 1000000;
-	card_capacity_mb = tmp;
-
-	tmp = gwloader_comm_buf_word[3];
-	tmp = tmp * 512 / 1000000;
-	card_free_mb = tmp;
-
-	// Load the directory
-	
-	uint8_t dir_buffer[16384];
-
-	lcd_print_centered("Loading root directory...", 160, 116, 0xFFFF, 0x0000);
-	lcd_update();
-
-	gwloader_comm_buf_word[3] = (uint32_t) dir_buffer;
-	gwloader_call(GWL_READ_DIR);
-
-	// Parse the directory
-	
-	uint8_t *ptr = dir_buffer;
-	
-	while(*ptr) {
-		if((*ptr) == 2) {
-			directory_names[direntries] = ptr + 1;
-			direntries++;
-		}
-		
-		*ptr = 0;
-		ptr++;
-		
-		while(*ptr >= 0x20) ptr++;
-	}
-	
-	if(direntries == 0) {
-		lcd_print_centered("There is no homebrew on the SD card.", 160, 108, 0xFFFF, 0x0000);
-		lcd_print_centered("Please press the power button", 160, 116, 0xFFFF, 0x0000);
-		lcd_print_centered("to turn off the device.", 160, 124, 0xFFFF, 0x0000);
+	if(fsmount((uint8_t*)0x90000000)) {
+		lcd_print_centered("Error! File system is corrupted!", 160, 116, 0xFFFF, 0x0000);
 		lcd_update();
-		while(1) buttons_get();
+
+		while(1);
 	}
-	
-	// Draw the main menu
-	
-	initmenu(direntries, card_capacity_mb, card_free_mb);
-	
+
 	while(1) {
-		int selection = mainmenu("G&W Homebrew Loader Menu");
+		int selection = mainmenu("G&W Homebrew Loader");
 		
-		if(selection >= 0)
+/*		if(selection >= 0)
 			start_flash_process(selection);
 		else if(selection == -1)
-			submenu();
+			submenu();*/
 	}
 }

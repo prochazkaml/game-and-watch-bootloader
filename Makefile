@@ -32,12 +32,10 @@ BUILD_DIR = build
 C_SOURCES =  \
 src/stm32.c \
 src/flash.c \
+src/fslib.c \
 src/lcd.c \
 src/buttons.c \
-src/gwloader.c \
-src/submenu.c \
 src/mainmenu.c \
-src/flashload.c \
 src/main.c \
 src/stm32h7xx_it.c \
 src/stm32h7xx_hal_msp.c \

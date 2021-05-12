@@ -388,3 +388,56 @@ void OSPI_NOR_WriteEnable(OSPI_HandleTypeDef *hospi)
 {
   OSPI_WriteBytes(hospi, 0x06, 0, NULL, 0, g_quad_mode);
 }
+
+void OSPI_EnableMemoryMappedMode(OSPI_HandleTypeDef *spi)
+{
+  OSPI_MemoryMappedTypeDef sMemMappedCfg;
+
+  OSPI_RegularCmdTypeDef sCommand = {
+    .Instruction = 0x0b, // FAST READ
+    .SIOOMode = HAL_OSPI_SIOO_INST_EVERY_CMD,
+    .AlternateBytesMode = HAL_OSPI_ALTERNATE_BYTES_NONE,
+    .OperationType = HAL_OSPI_OPTYPE_READ_CFG,
+    .FlashId = 0,
+    .InstructionDtrMode = HAL_OSPI_INSTRUCTION_DTR_DISABLE,
+    .InstructionSize = HAL_OSPI_INSTRUCTION_8_BITS,
+    .AddressDtrMode = HAL_OSPI_ADDRESS_DTR_DISABLE,
+    .DataDtrMode = HAL_OSPI_DATA_DTR_DISABLE,
+    .DQSMode = HAL_OSPI_DQS_DISABLE,
+    .AddressSize = HAL_OSPI_ADDRESS_24_BITS,
+    .SIOOMode = HAL_OSPI_SIOO_INST_EVERY_CMD,
+    .DummyCycles = 8,
+    .AlternateBytesSize = HAL_OSPI_ALTERNATE_BYTES_8_BITS,
+    .AlternateBytes = 0x00,
+    .NbData = 0,
+    .AlternateBytes = 0x00,
+  };
+
+  set_cmd_lines(&sCommand, g_quad_mode, g_vendor, 1, 1);
+
+  if (g_quad_mode) {
+    sCommand.Instruction = 0xeb;
+    sCommand.DummyCycles = 6;
+  }
+
+  /* Memory-mapped mode configuration for Linear burst read operations */
+  if (HAL_OSPI_Command(spi, &sCommand, HAL_OSPI_TIMEOUT_DEFAULT_VALUE) !=
+      HAL_OK) {
+    Error_Handler();
+  }
+
+  // Use read instruction for write (in order to not alter the flash by accident)
+  sCommand.OperationType = HAL_OSPI_OPTYPE_WRITE_CFG;
+  if (HAL_OSPI_Command(spi, &sCommand, HAL_OSPI_TIMEOUT_DEFAULT_VALUE) !=
+      HAL_OK) {
+    Error_Handler();
+  }
+
+  /*Disable timeout counter for memory mapped mode*/
+  sMemMappedCfg.TimeOutActivation = HAL_OSPI_TIMEOUT_COUNTER_DISABLE;
+  sMemMappedCfg.TimeOutPeriod = 0;
+  /*Enable memory mapped mode*/
+  if (HAL_OSPI_MemoryMapped(spi, &sMemMappedCfg) != HAL_OK) {
+    Error_Handler();
+  }
+}
