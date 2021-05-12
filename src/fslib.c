@@ -287,7 +287,7 @@ uint8_t *fsloadfile(char *filename, uint32_t *size) {
 		if(entry->Attribute & 0x10) errptr("\"%s\" is a dir, not a file!\n", filename);
 
 		i = entry->Size;
-		*size = i;
+		if(size != NULL) *size = i;
 		data = malloc(i);
 
 		sect = entry->StartCluster;

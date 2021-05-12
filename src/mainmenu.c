@@ -31,7 +31,7 @@ void draw_border(int i, int color) {
 
 	for(j = 1; j < 53; j++) {
 		framebuffer[320 * 21 + i * 320 * 72 + j * 320 + 7] = color;
-		framebuffer[320 * 21 + i * 320 * 72 + j * 320 + (320 - 7)] = color;
+		framebuffer[320 * 21 + i * 320 * 72 + j * 320 + (320 - 8)] = color;
 	}
 }
 
@@ -104,14 +104,65 @@ void decode_bmp(unsigned char *bmp, int id) {
 	copy_bmp(imgdata, id);
 }
 
+void hb_error(int id, char *msg) {
+	cache[id].name[0] = 0;
+	cache[id].version[0] = 0;
+	strcpy(cache[id].author, msg);
+}
+
 /**
   * @brief  Load homebrew info to the homebrew cache.
-  * @param  id: Homebrew ID (0-2).
+  * @param  id: Homebrew cache ID (0-2).
   * @param  dir: Directory name.
   * @return Nothing.
   */
 void load_hb_info(int id, char *dir) {
+	uint8_t *manifest, *bmp;
+	uint32_t size;
 
+	char *lineparser;
+
+	if(!fschdir(dir)) {
+		if((manifest = fsloadfile("MANIFEST.TXT", &size)) != NULL) {
+			// Use default values first
+
+			sprintf(cache[id].name, "Unnamed homebrew");
+			sprintf(cache[id].author, "Unknown author");
+			sprintf(cache[id].version, "1.0");
+
+			// Parse each line
+
+			lineparser = strtok((char *) manifest, "\n");
+
+			while(lineparser != NULL) {
+				if(!memcmp("Name=", lineparser, 5))
+					strncpy(cache[id].name, lineparser + 5, 32);
+
+				if(!memcmp("Author=", lineparser, 7))
+					strncpy(cache[id].author, lineparser + 7, 32);
+
+				if(!memcmp("Version=", lineparser, 8))
+					strncpy(cache[id].version, lineparser + 8, 32);
+
+				lineparser = strtok(NULL, "\n");
+			}
+
+			free(manifest);
+		} else {
+			hb_error(id, "Corrputed homebrew");
+		}
+
+		if((bmp = fsloadfile("ICON.BMP", NULL)) != NULL) {
+			decode_bmp(bmp, id);
+			free(bmp);
+		} else {
+			decode_bmp(default_bmp, id);
+		}
+
+		fschdir("..");
+	} else {
+		hb_error(id, "Fatal error loading homebrew.");
+	}
 }
 
 /**
@@ -125,12 +176,16 @@ int mainmenu(char *title) {
 	DirEntry *dir = fsreaddir(1, &maxselection);
 	char buffer[16];
 
-//	maxselection = ???;
 	selection = 0;
 	scroll = 0;
 
 	for(i = 0; i < 16 * 320; i++) framebuffer[i] = LCD_COLOR_GRAYSCALE(4);
 	lcd_print_centered(title, 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
+
+	for(i = 0; i < 3; i++) {
+		fatname_to_filename((char *)(&dir[i]), buffer);
+		load_hb_info(i, buffer);
+	}
 
 	while(1) {
 		uint32_t buttons = buttons_get();
@@ -143,14 +198,14 @@ int mainmenu(char *title) {
 				if(scroll < 0) scroll = 0;
 				for(i = 0; i < 3; i++) {
 					fatname_to_filename((char *)(&dir[scroll + i]), buffer);
-					load_hb_info(scroll + i, buffer);
+					load_hb_info((scroll + i) % 3, buffer);
 				}
 			}
 			
 			if(selection - scroll == -1) {
 				scroll--;
 				fatname_to_filename((char *)(&dir[selection]), buffer);
-				load_hb_info(selection, buffer);
+				load_hb_info(selection % 3, buffer);
 			}
 				
 		}
@@ -168,7 +223,7 @@ int mainmenu(char *title) {
 				
 			if(selection - scroll == 3) {
 				fatname_to_filename((char *)(&dir[selection]), buffer);
-				load_hb_info(selection, buffer);
+				load_hb_info(selection % 3, buffer);
 				scroll++;
 			}
 		}

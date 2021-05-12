@@ -25,7 +25,7 @@
 #include "lcd.h"
 #include "fslib.h"
 
-//#include "mainmenu.h"
+#include "mainmenu.h"
 
 /**
   * @brief  The application entry point.
