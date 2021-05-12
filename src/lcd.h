@@ -17,3 +17,4 @@ void lcd_print(char *str, int x, int y, int fg, int bg);
 void lcd_print_centered(char *str, int x, int y, int fg, int bg);
 void lcd_print_rtl(char *str, int x, int y, int fg, int bg);
 void lcd_draw_icon(uint16_t *bmp, int off_x, int off_y);
+void lcd_deinit(SPI_HandleTypeDef *spi);

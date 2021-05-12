@@ -1,11 +1,8 @@
 #include <stdint.h>
 
 #include "stm32.h"
-#include "gwloader.h"
 #include "lcd.h"
 #include "stm32h7xx_hal.h"
-
-uint8_t *directory_names[1024];
 
 uint8_t data_buffer[64 * 1024];
 
@@ -393,13 +390,13 @@ void Error_Handler() {
   * @return Nothing.
   */
 void GW_Sleep() {
-	gwloader_call_nonblock(GWL_HALT);
-	
 	HAL_Delay(100);
 
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW);
 
 	lcd_backlight_off();
+
+	lcd_deinit(&hspi2);
 
 	HAL_PWR_EnterSTANDBYMode();
 	
