@@ -288,7 +288,7 @@ uint8_t *fsloadfile(char *filename, uint32_t *size) {
 
 		i = entry->Size;
 		if(size != NULL) *size = i;
-		data = malloc(i);
+		data = malloc(i + 1);
 
 		sect = entry->StartCluster;
 
@@ -299,6 +299,8 @@ uint8_t *fsloadfile(char *filename, uint32_t *size) {
 
 			sect = fat[sect];
 		}
+
+		data[i] = 0;
 
 		return data;
 	} else errptr("Could not find dir \"%s\"!\n", filename);

@@ -81,6 +81,7 @@ void update_screen() {
 
 /**
   * @brief  Copy raw bitmap to the homebrew cache.
+  * @param  imgdata: Pointer to 16-bit raw data.
   * @param  id: Homebrew cache ID (0-2).
   * @return Nothing.
   */
@@ -96,6 +97,7 @@ void copy_bmp(uint16_t *imgdata, int id) {
 
 /**
   * @brief  Decode bitmap to the homebrew cache.
+  * @param  bmp: Pointer to a valid BMP file.
   * @param  id: Homebrew cache ID (0-2).
   * @return Nothing.
   */
@@ -104,6 +106,12 @@ void decode_bmp(unsigned char *bmp, int id) {
 	copy_bmp(imgdata, id);
 }
 
+/**
+  * @brief  Prints an error message to the homebrew cache.
+  * @param  id: Homebrew cache ID (0-2).
+  * @param  msg: Error message.
+  * @return Nothing.
+  */
 void hb_error(int id, char *msg) {
 	cache[id].name[0] = 0;
 	cache[id].version[0] = 0;
@@ -119,49 +127,52 @@ void hb_error(int id, char *msg) {
 void load_hb_info(int id, char *dir) {
 	uint8_t *manifest, *bmp;
 	uint32_t size;
-
 	char *lineparser;
 
-	if(!fschdir(dir)) {
-		if((manifest = fsloadfile("MANIFEST.TXT", &size)) != NULL) {
-			// Use default values first
+	int i = id % 3;
 
-			sprintf(cache[id].name, "Unnamed homebrew");
-			sprintf(cache[id].author, "Unknown author");
-			sprintf(cache[id].version, "1.0");
+	if(cache[i].id != id) {
+		if(!fschdir(dir)) {
+			if((manifest = fsloadfile("MANIFEST.TXT", &size)) != NULL) {
+				// Use default values first
 
-			// Parse each line
+				sprintf(cache[i].name, "Unnamed homebrew");
+				sprintf(cache[i].author, "Unknown author");
+				sprintf(cache[i].version, "1.0");
 
-			lineparser = strtok((char *) manifest, "\n");
+				// Parse each line
 
-			while(lineparser != NULL) {
-				if(!memcmp("Name=", lineparser, 5))
-					strncpy(cache[id].name, lineparser + 5, 32);
+				lineparser = strtok((char *) manifest, "\n");
 
-				if(!memcmp("Author=", lineparser, 7))
-					strncpy(cache[id].author, lineparser + 7, 32);
+				while(lineparser != NULL) {
+					if(!memcmp("Name=", lineparser, 5))
+						strncpy(cache[i].name, lineparser + 5, 32);
 
-				if(!memcmp("Version=", lineparser, 8))
-					strncpy(cache[id].version, lineparser + 8, 32);
+					if(!memcmp("Author=", lineparser, 7))
+						strncpy(cache[i].author, lineparser + 7, 32);
 
-				lineparser = strtok(NULL, "\n");
+					if(!memcmp("Version=", lineparser, 8))
+						strncpy(cache[i].version, lineparser + 8, 32);
+
+					lineparser = strtok(NULL, "\n");
+				}
+
+				free(manifest);
+			} else {
+				hb_error(i, "Corrputed homebrew");
 			}
 
-			free(manifest);
-		} else {
-			hb_error(id, "Corrputed homebrew");
-		}
+			if((bmp = fsloadfile("ICON.BMP", NULL)) != NULL) {
+				decode_bmp(bmp, i);
+				free(bmp);
+			} else {
+				copy_bmp((uint16_t *) default_bmp, i);
+			}
 
-		if((bmp = fsloadfile("ICON.BMP", NULL)) != NULL) {
-			decode_bmp(bmp, id);
-			free(bmp);
+			fschdir("..");
 		} else {
-			decode_bmp(default_bmp, id);
+			hb_error(i, "Fatal error loading homebrew.");
 		}
-
-		fschdir("..");
-	} else {
-		hb_error(id, "Fatal error loading homebrew.");
 	}
 }
 
@@ -183,6 +194,8 @@ int mainmenu(char *title) {
 	lcd_print_centered(title, 160, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	for(i = 0; i < 3; i++) {
+		cache[i].id = -1;
+
 		fatname_to_filename((char *)(&dir[i]), buffer);
 		load_hb_info(i, buffer);
 	}
@@ -198,14 +211,14 @@ int mainmenu(char *title) {
 				if(scroll < 0) scroll = 0;
 				for(i = 0; i < 3; i++) {
 					fatname_to_filename((char *)(&dir[scroll + i]), buffer);
-					load_hb_info((scroll + i) % 3, buffer);
+					load_hb_info(scroll + i, buffer);
 				}
 			}
 			
 			if(selection - scroll == -1) {
 				scroll--;
 				fatname_to_filename((char *)(&dir[selection]), buffer);
-				load_hb_info(selection % 3, buffer);
+				load_hb_info(selection, buffer);
 			}
 				
 		}
@@ -223,7 +236,7 @@ int mainmenu(char *title) {
 				
 			if(selection - scroll == 3) {
 				fatname_to_filename((char *)(&dir[selection]), buffer);
-				load_hb_info(selection % 3, buffer);
+				load_hb_info(selection, buffer);
 				scroll++;
 			}
 		}
