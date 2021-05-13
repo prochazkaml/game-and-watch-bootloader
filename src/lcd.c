@@ -10,9 +10,6 @@ uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 
 const uint8_t bl_levels[8] = { 128, 136, 144, 152, 160, 176, 192, 255 };
 
-extern DAC_HandleTypeDef hdac1;
-extern DAC_HandleTypeDef hdac2;
-
 uint32_t active_framebuffer;
 
 /**
