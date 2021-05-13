@@ -19,11 +19,11 @@
 #ifdef FSDEBUG
 #include <stdio.h>
 #define msg(...) printf("[FSLIB] "__VA_ARGS__)
-#define err(...) { printf("[ERROR] "__VA_ARGS__); return 1; }
+#define err(...) { printf("[ERROR] "__VA_ARGS__); return -1; }
 #define errptr(...) { printf("[ERROR] "__VA_ARGS__); return NULL; }
 #else
 #define msg(...)
-#define err(...) return 1
+#define err(...) return -1
 #define errptr(...) return NULL
 #endif
 
@@ -221,7 +221,7 @@ DirEntry *fsreaddir(int dirs_only, int *entries) {
 			memcpy(output + ptr++, tmp, sizeof(DirEntry));
 	}
 
-	msg("Found %d entr%s matching \"%s\"\n\n", ptr, (ptr == 1) ? "y" : "ies", mask);
+	msg("Found %d entr%s\n\n", ptr, (ptr == 1) ? "y" : "ies");
 
 	*entries = ptr;
 	return output;
@@ -276,34 +276,30 @@ int fschdir(char *filename) {
 	return 0;
 }
 
-uint8_t *fsloadfile(char *filename, uint32_t *size) {
+long fsloadfile(char *filename, uint8_t *buffer, uint32_t maxsize) {
 	DirEntry *entry;
-	uint8_t *data;
-	int i, j = 0, sect;
+	int i, j = 0, size, sect;
 
 	msg("Searching for file \"%s\"...\n", filename);
 	
 	if((entry = fsfindfile(filename)) != NULL) {
-		if(entry->Attribute & 0x10) errptr("\"%s\" is a dir, not a file!\n", filename);
+		if(entry->Attribute & 0x10) err("\"%s\" is a dir, not a file!\n", filename);
 
-		i = entry->Size;
-		if(size != NULL) *size = i;
-		data = malloc(i + 1);
+		size = entry->Size;
+		i = (size < maxsize) ? size : maxsize;
 
 		sect = entry->StartCluster;
 
 		while(i > 0) {
-			memcpy(data + (j++) * fsinfo.BytesPerSector, image + (sect + datasector - 2) * fsinfo.BytesPerSector, (i > 4096) ? 4096 : i);
+			memcpy(buffer + (j++) * fsinfo.BytesPerSector, image + (sect + datasector - 2) * fsinfo.BytesPerSector, (i > 4096) ? 4096 : i);
 
 			i -= fsinfo.BytesPerSector;
 
 			sect = fat[sect];
 		}
 
-		data[i] = 0;
-
-		return data;
-	} else errptr("Could not find dir \"%s\"!\n", filename);
+		return size;
+	} else err("Could not find file \"%s\"!\n", filename);
 }
 
 int fswritefile(char *filename, uint8_t *data, uint32_t size) {

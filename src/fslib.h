@@ -38,7 +38,7 @@ typedef struct __attribute__((__packed__)) {
 } DirEntry;
 
 int fsmount(uint8_t *fsimage);
-uint8_t *fsloadfile(char *filename, uint32_t *size);
+long fsloadfile(char *filename, uint8_t *buffer, uint32_t maxsize);
 int fswritefile(char *filename, uint8_t *data, uint32_t size);
 int fsdeletefile(char *filename);
 DirEntry *fsreaddir(int dirs_only, int *entries);

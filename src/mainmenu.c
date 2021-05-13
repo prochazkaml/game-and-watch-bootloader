@@ -36,13 +36,18 @@ void draw_border(int i, int color) {
 }
 
 /**
-  * @brief  Draw the footer.
+  * @brief  Update the homebrew information on the screen.
   * @return Nothing.
   */
-void draw_footer() {
-	int j;
+void update_screen() {
+	int i, j;
 	char buffer[32];
-	
+
+	// Clear the working area
+
+	for(j = 16 * 320; j < 224 * 320; j++)
+		framebuffer[j] = 0x0000;	
+
 	// Draw the footer
 
 	for(j = 224 * 320; j < 240 * 320; j++) framebuffer[j] = LCD_COLOR_GRAYSCALE(4);
@@ -51,21 +56,6 @@ void draw_footer() {
 
 	sprintf(buffer, "%d kB free", fsgetfreespace());
 	lcd_print(buffer, 8, 228, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
-
-	// Clear the screen
-
-	for(j = 16 * 320; j < 224 * 320; j++)
-		framebuffer[j] = 0x0000;	
-}
-
-/**
-  * @brief  Update the homebrew information on the screen.
-  * @return Nothing.
-  */
-void update_screen() {
-	int i, j;
-
-	draw_footer();
 	
 	// Draw the boxes, text and icons
 
@@ -127,8 +117,7 @@ void hb_error(int id, char *msg) {
   * @return Nothing.
   */
 void load_hb_info(int id, char *dir) {
-	uint8_t *manifest, *bmp;
-	uint32_t size;
+	long size;
 	char *lineparser;
 
 	int i = id % 3;
@@ -139,7 +128,7 @@ void load_hb_info(int id, char *dir) {
 		// If it hasn't, then enter its directory and load the manifest & icon
 
 		if(!fschdir(dir)) {
-			if((manifest = fsloadfile("MANIFEST.TXT", &size)) != NULL) {
+			if((size = fsloadfile("MANIFEST.TXT", data_buffer, sizeof(data_buffer))) > 0) {
 				// Use default values first
 
 				sprintf(cache[i].name, "Unnamed homebrew");
@@ -148,7 +137,7 @@ void load_hb_info(int id, char *dir) {
 
 				// Parse each line
 
-				lineparser = strtok((char *) manifest, "\n");
+				lineparser = strtok((char *) data_buffer, "\n");
 
 				while(lineparser != NULL) {
 					if(!memcmp("Name=", lineparser, 5))
@@ -162,15 +151,12 @@ void load_hb_info(int id, char *dir) {
 
 					lineparser = strtok(NULL, "\n");
 				}
-
-				free(manifest);
 			} else {
 				hb_error(i, "Corrputed homebrew");
 			}
 
-			if((bmp = fsloadfile("ICON.BMP", NULL)) != NULL) {
-				decode_bmp(bmp, i);
-				free(bmp);
+			if(fsloadfile("ICON.BMP", data_buffer, sizeof(data_buffer)) > 0) {
+				decode_bmp(data_buffer, i);
 			} else {
 				copy_bmp((uint16_t *) default_bmp, i);
 			}
@@ -179,6 +165,8 @@ void load_hb_info(int id, char *dir) {
 		} else {
 			hb_error(i, "Fatal error loading homebrew.");
 		}
+
+		cache[i].id = id;
 	}
 }
 

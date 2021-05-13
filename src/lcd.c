@@ -129,6 +129,8 @@ void lcd_draw_icon(uint16_t *bmp, int off_x, int off_y) {
 void lcd_putchar(unsigned char c, int x, int y, int fg, int bg) {
 	int i, j;
 
+	if(c < ' ' || c > '~') return;
+
 	c -= ' ';
 
 	for(j = 0; j < 8; j++) {
@@ -148,9 +150,16 @@ void lcd_putchar(unsigned char c, int x, int y, int fg, int bg) {
   * @return Nothing.
   */
 void lcd_print(char *str, int x, int y, int fg, int bg) {
+	int og_x = x;
+
 	while(*str) {
 		lcd_putchar(*str++, x, y, fg, bg);
 		x += 8;
+
+		if(*str == '\n') {
+			x = og_x;
+			y += 8;
+		}
 	}
 }
 
