@@ -12,7 +12,11 @@ This program replaces the original firmware and loads homebrew from a FAT16 file
 
 ## Credits
 
-The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base). External flash access routines taken from [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader).
+This project contains different bits and pieces from the following projects:
+
+- [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base)
+- [game-and-watch-retro-go](https://github.com/kbeckmann/game-and-watch-retro-go)
+- [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader)
 
 ## Instructions for building the project
 
