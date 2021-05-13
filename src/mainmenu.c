@@ -8,6 +8,7 @@
 #include "lcd.h"
 #include "stm32.h"
 #include "fslib.h"
+#include "config.h"
 
 #include "default.h"
 
@@ -233,6 +234,16 @@ int mainmenu(char *title) {
 				load_hb_info(selection, buffer);
 				scroll++;
 			}
+		}
+
+		if((buttons & B_Left) && syscfg->Brightness > 0) {
+			lcd_backlight_level(--syscfg->Brightness);
+			config_update();
+		}
+
+		if((buttons & B_Right) && syscfg->Brightness < 7) {
+			lcd_backlight_level(++syscfg->Brightness);
+			config_update();
 		}
 
 		if(buttons & B_A) {

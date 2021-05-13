@@ -31,6 +31,7 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 src/stm32.c \
+src/config.c \
 src/flash.c \
 src/fslib.c \
 src/lcd.c \
@@ -44,6 +45,8 @@ Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc_ex.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dac.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dac_ex.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rtc.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rtc_ex.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c \

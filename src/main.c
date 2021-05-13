@@ -20,6 +20,7 @@
 #include <string.h>
 #include "stm32h7xx_hal.h"
 #include "stm32.h"
+#include "config.h"
 #include "buttons.h"
 #include "flash.h"
 #include "lcd.h"
@@ -50,15 +51,20 @@ int main() {
 	MX_OCTOSPI1_Init();
 	MX_DAC1_Init();
 	MX_DAC2_Init();
+	MX_RTC_Init();
 	
 	// Initialize interrupts
 
 	MX_NVIC_Init();
 
+	// Initialize system configuration
+
+	config_init();
+
 	// Initialize LCD
 	
 	lcd_init();
-	lcd_backlight_on(160);
+	lcd_backlight_level(syscfg->Brightness);
 
 	// Inintialize flash
 

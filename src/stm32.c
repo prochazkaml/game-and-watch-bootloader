@@ -15,8 +15,31 @@ DMA_HandleTypeDef hdma_sai1_a;
 
 SPI_HandleTypeDef hspi2;
 
+RTC_HandleTypeDef hrtc;
+
 DAC_HandleTypeDef hdac1;
 DAC_HandleTypeDef hdac2;
+
+/**
+  * @brief Reads data from an RTC backup register.
+  * @param reg: Register (0-31).
+  * @return 32-bit data word.
+  */
+uint32_t rtc_readreg(uint8_t reg) {
+	return HAL_RTCEx_BKUPRead(&hrtc, reg);
+}
+
+/**
+  * @brief Writes data to an RTC backup register.
+  * @param reg: Register (0-31).
+  * @param data: 32-bit data word.
+  * @return Nothing.
+  */
+void rtc_writereg(uint8_t reg, uint32_t data) {
+	HAL_PWR_EnableBkUpAccess();
+    HAL_RTCEx_BKUPWrite(&hrtc, reg, data);
+    HAL_PWR_DisableBkUpAccess();
+}
 
 /**
   * @brief System Clock Configuration.
@@ -77,7 +100,8 @@ void SystemClock_Config() {
 		Error_Handler();
 	}
 
-	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_SPI2
+	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC
+								|RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_SPI2
 								|RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_OSPI
 								|RCC_PERIPHCLK_CKPER;
 	PeriphClkInitStruct.PLL2.PLL2M = 25;
@@ -100,6 +124,8 @@ void SystemClock_Config() {
 	PeriphClkInitStruct.CkperClockSelection = RCC_CLKPSOURCE_HSI;
 	PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL2;
 	PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_CLKP;
+	PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
+	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
 
 	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
 		Error_Handler();
@@ -334,6 +360,48 @@ void MX_DAC2_Init() {
 	sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_DISABLE;
 	sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
 	if (HAL_DAC_ConfigChannel(&hdac2, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+		Error_Handler();
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_RTC_Init() {
+	RTC_TimeTypeDef sTime = {0};
+	RTC_DateTypeDef sDate = {0};
+	
+	/** Initialize RTC Only
+	 */
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 0;    // Currently this is configured to allow for profiling
+	hrtc.Init.SynchPrediv = 32250; // This the internal 32khz oscillator calibrated to one specific unit
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+
+	if (HAL_RTC_Init(&hrtc) != HAL_OK)
+		Error_Handler();
+	
+	/** Initialize RTC and set the Time and Date
+	 */
+	sTime.Hours = 0x0;
+	sTime.Minutes = 0x0;
+	sTime.Seconds = 0x0;
+	sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+		Error_Handler();
+
+	sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+	sDate.Month = RTC_MONTH_JANUARY;
+	sDate.Date = 0x1;
+	sDate.Year = 0x0;
+
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
 		Error_Handler();
 }
 

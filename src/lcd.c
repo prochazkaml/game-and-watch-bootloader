@@ -8,6 +8,8 @@
 uint16_t framebuffer[320 * 240] __attribute__((section (".lcd")));
 uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 
+const uint8_t bl_levels[8] = { 128, 136, 144, 152, 160, 176, 192, 255 };
+
 extern DAC_HandleTypeDef hdac1;
 extern DAC_HandleTypeDef hdac2;
 
@@ -36,6 +38,15 @@ void lcd_backlight_on(uint8_t brightness) {
 	HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 	HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
 	HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
+}
+
+/**
+  * @brief  Turn on the backlight with one of the preset levels.
+  * @param  level: LCD brightness level (0-7).
+  * @return Nothing.
+  */
+void lcd_backlight_level(uint8_t level) {
+	lcd_backlight_on(bl_levels[level & 7]);
 }
 
 /**

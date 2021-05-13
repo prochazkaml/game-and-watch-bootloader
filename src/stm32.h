@@ -9,6 +9,7 @@ extern DMA_HandleTypeDef hdma_sai1_a;
 extern SPI_HandleTypeDef hspi2;
 extern DAC_HandleTypeDef hdac1;
 extern DAC_HandleTypeDef hdac2;
+extern RTC_HandleTypeDef hrtc;
 
 void SystemClock_Config();
 void MX_GPIO_Init();
@@ -20,8 +21,12 @@ void MX_SAI1_Init();
 void MX_NVIC_Init();
 void MX_DAC1_Init();
 void MX_DAC2_Init();
+void MX_RTC_Init();
 void GW_Sleep();
 void Error_Handler();
+
+uint32_t rtc_readreg(uint8_t reg);
+void rtc_writereg(uint8_t reg, uint32_t data);
 
 #define GPIO_Speaker_enable_Pin GPIO_PIN_3
 #define GPIO_Speaker_enable_GPIO_Port GPIOE

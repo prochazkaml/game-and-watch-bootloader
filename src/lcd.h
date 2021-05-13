@@ -8,6 +8,7 @@ void lcd_init();
 void lcd_update();
 void lcd_backlight_on(uint8_t brightness);
 void lcd_backlight_off();
+void lcd_backlight_level(uint8_t level);
 
 void lcd_fade();
 void lcd_draw_window(int w, int h);
