@@ -1,4 +1,4 @@
-# QUICK HEADS-UP: THIS PROGRAM DOES NOT WORK YET. LIKE AT ALL.
+# _NOTE: THIS PROJECT IS IN VERY EARLY DEVELOPMENT STAGES._
 
 # game-and-watch-bootloader
 
@@ -6,11 +6,17 @@ A free and open source homebrew launcher for the Game & Watch.
 
 ![GWLoader Main Menu](http://gw.prochazka.ml/menu.jpg)
 
+_(note: this picture does not represent the current state of the project)_
+
 This program replaces the original firmware and loads homebrew from a FAT16 filesystem located on the external flash into RAM. Use the [gwlink](https://github.com/prochazkaml/gwlink) program to mount the Game & Watch's filesystem on your local Linux computer using FUSE (TBD).
 
 ## Credits
 
-The code is based on [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base). External flash access routines taken from [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader).
+This project contains different bits and pieces from the following projects:
+
+- [game-and-watch-base](https://github.com/ghidraninja/game-and-watch-base)
+- [game-and-watch-retro-go](https://github.com/kbeckmann/game-and-watch-retro-go)
+- [game-and-watch-flashloader](https://github.com/ghidraninja/game-and-watch-flashloader)
 
 ## Instructions for building the project
 
@@ -58,6 +64,13 @@ If you want to be really ugly, you can omit this file. It will say "Corrupted ho
 
 A 64x48 16bpp icon, which will appear in the main menu. If it is not present, then a generic icon will be displayed instead.
 
-## Features
+## Features / TODO list
 
-TBD
+- [X] Functional UI
+- [X] Filesystem library for reading
+- [ ] Launching homebrew
+- [ ] External flash formatting
+- [ ] Filesystem library for writing
+- [ ] PC link
+- [ ] Adjustable backlight
+- [ ] Battery indicator
