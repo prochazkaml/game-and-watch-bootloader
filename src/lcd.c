@@ -211,13 +211,7 @@ void lcd_init() {
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
 	// TURN OFF PD8
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);
-
-	// Turn off CS
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
 	HAL_Delay(100);
-
-	lcd_backlight_on();
-
 
 	// Wake
 	// Enable 3.3v
@@ -255,6 +249,8 @@ void lcd_init() {
 	}
 	
 	HAL_LTDC_SetAddress(&hltdc, (uint32_t) &fb_internal, 0);
+
+	HAL_Delay(100);
 }
 
 /**
