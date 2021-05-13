@@ -8,6 +8,36 @@
 uint16_t framebuffer[320 * 240] __attribute__((section (".lcd")));
 uint16_t fb_internal[320 * 240] __attribute__((section (".lcd")));
 
+extern DAC_HandleTypeDef hdac1;
+extern DAC_HandleTypeDef hdac2;
+
+uint32_t active_framebuffer;
+
+/**
+  * @brief  Turn off the backlight.
+  * @return Nothing.
+  */
+void lcd_backlight_off() {
+	HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
+	HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
+	HAL_DAC_Stop(&hdac2, DAC_CHANNEL_1);
+}
+
+/**
+  * @brief  Turn on the backlight.
+  * @param  brightness: LCD brightness (128-255 recommended).
+  * @return Nothing.
+  */
+void lcd_backlight_on(uint8_t brightness) {
+	HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, brightness);
+	HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, brightness);
+	HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_8B_R, brightness);
+
+	HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+	HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+	HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
+}
+
 /**
   * @brief  Fade the working area (320x208+0+16) of the screen.
   * @return Nothing.
@@ -84,22 +114,22 @@ void lcd_draw_progress_bar(int step, int total, int x, int y, int w, int h) {
 /**
   * @brief  Turn off the backlight.
   * @return Nothing.
-  */
+  
 void lcd_backlight_off() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
-}
+}*/
 
 /**
   * @brief  Turn on the backlight.
   * @return Nothing.
-  */
+  
 void lcd_backlight_on() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
-}
+}*/
 
 /**
   * @brief  Draw a 64x48 16bpp raw bitmap on the screen.
@@ -199,9 +229,6 @@ void lcd_init() {
 	memset(framebuffer, 0, 320 * 240 * 2);
 	memset(fb_internal, 0, 320 * 240 * 2);
 
-	// Turn display *off* completely.
-	lcd_backlight_off();
-
 	// 3.3v power to display *SET* to disable supply.
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
@@ -250,6 +277,7 @@ void lcd_init() {
 	
 	HAL_LTDC_SetAddress(&hltdc, (uint32_t) &fb_internal, 0);
 
+	// Prevents the screen from flashing on bootup.
 	HAL_Delay(100);
 }
 
@@ -266,12 +294,15 @@ void lcd_update() {
   * @return Nothing.
   */
 void lcd_deinit(SPI_HandleTypeDef *spi) {
-  // Chip select low.
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-  // 3.3v power to display *SET* to disable supply.
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
-  // Disable 1.8v.
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
-  // Pull reset line(?) low. (Flakey without this)
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);
+	// Chip select low.
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+
+	// 3.3v power to display *SET* to disable supply.
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+
+	// Disable 1.8v.
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+
+	// Pull reset line(?) low. (Flakey without this)
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);
 }

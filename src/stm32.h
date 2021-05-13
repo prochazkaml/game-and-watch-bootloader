@@ -7,6 +7,8 @@ extern OSPI_HandleTypeDef hospi1;
 extern SAI_HandleTypeDef hsai_BlockA1;
 extern DMA_HandleTypeDef hdma_sai1_a;
 extern SPI_HandleTypeDef hspi2;
+extern DAC_HandleTypeDef hdac1;
+extern DAC_HandleTypeDef hdac2;
 
 void SystemClock_Config();
 void MX_GPIO_Init();
@@ -16,6 +18,8 @@ void MX_SPI2_Init();
 void MX_OCTOSPI1_Init();
 void MX_SAI1_Init();
 void MX_NVIC_Init();
+void MX_DAC1_Init();
+void MX_DAC2_Init();
 void GW_Sleep();
 void Error_Handler();
 

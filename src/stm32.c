@@ -15,6 +15,9 @@ DMA_HandleTypeDef hdma_sai1_a;
 
 SPI_HandleTypeDef hspi2;
 
+DAC_HandleTypeDef hdac1;
+DAC_HandleTypeDef hdac2;
+
 /**
   * @brief System Clock Configuration.
   * @return Nothing.
@@ -278,6 +281,63 @@ void MX_SPI2_Init() {
 }
 
 /**
+  * @brief DAC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_DAC1_Init() {
+	DAC_ChannelConfTypeDef sConfig = {0};
+
+	/** DAC Initialization
+	 */
+	hdac1.Instance = DAC1;
+	if (HAL_DAC_Init(&hdac1) != HAL_OK)
+		Error_Handler();
+
+	/** DAC channel OUT1 config
+	 */
+	sConfig.DAC_SampleAndHold = DAC_SAMPLEANDHOLD_DISABLE;
+	sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
+	sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+	sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_DISABLE;
+	sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
+	if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+		Error_Handler();
+
+	/** DAC channel OUT2 config
+	 */
+	sConfig.DAC_ConnectOnChipPeripheral = DAC_SAMPLEANDHOLD_DISABLE;
+	if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_2) != HAL_OK)
+		Error_Handler();
+}
+
+/**
+  * @brief DAC2 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_DAC2_Init() {
+	DAC_ChannelConfTypeDef sConfig = {0};
+
+	/** DAC Initialization
+	 */
+	hdac2.Instance = DAC2;
+
+	if (HAL_DAC_Init(&hdac2) != HAL_OK)
+		Error_Handler();
+
+	/** DAC channel OUT1 config
+	 */
+	sConfig.DAC_SampleAndHold = DAC_SAMPLEANDHOLD_DISABLE;
+	sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
+	sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+	sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_DISABLE;
+	sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
+	if (HAL_DAC_ConfigChannel(&hdac2, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+		Error_Handler();
+}
+
+/**
   * @brief Enables DMA controller clock.
   * @return Nothing.
   */
@@ -309,7 +369,6 @@ void MX_GPIO_Init() {
 	HAL_GPIO_WritePin(GPIO_Speaker_enable_GPIO_Port, GPIO_Speaker_enable_Pin, GPIO_PIN_SET);
 
 	// Configure GPIO pin Output Level
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_4, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
@@ -332,13 +391,6 @@ void MX_GPIO_Init() {
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(BTN_Power_GPIO_Port, &GPIO_InitStruct);
-
-	// Configure GPIO pins : PA4 PA5 PA6
-	GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	// Configure GPIO pin : PB12
 	GPIO_InitStruct.Pin = GPIO_PIN_12;
@@ -374,7 +426,7 @@ void Error_Handler() {
 		// Blink display to indicate failure
 		lcd_backlight_off();
 		HAL_Delay(500);
-		lcd_backlight_on();
+		lcd_backlight_on(255);
 		HAL_Delay(500);
 	}
 }

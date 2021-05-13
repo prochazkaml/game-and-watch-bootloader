@@ -6,7 +6,7 @@ extern uint16_t framebuffer[320 * 240]  __attribute__((section (".lcd")));
 
 void lcd_init();
 void lcd_update();
-void lcd_backlight_on();
+void lcd_backlight_on(uint8_t brightness);
 void lcd_backlight_off();
 
 void lcd_fade();

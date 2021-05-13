@@ -48,7 +48,9 @@ int main() {
 	MX_LTDC_Init();
 	MX_SPI2_Init();
 	MX_OCTOSPI1_Init();
-
+	MX_DAC1_Init();
+	MX_DAC2_Init();
+	
 	// Initialize interrupts
 
 	MX_NVIC_Init();
@@ -56,15 +58,13 @@ int main() {
 	// Initialize LCD
 	
 	lcd_init();
-	lcd_backlight_on();
+	lcd_backlight_on(160);
 
 	// Inintialize flash
 
 	OSPI_Init(&hospi1, SPI_MODE, VENDOR_MX);
 	OSPI_NOR_WriteEnable(&hospi1);
 	OSPI_EnableMemoryMappedMode(&hospi1);
-
-	data_buffer[0] = 0x69;
 
 	if(fsmount((uint8_t*)0x90000000)) {
 		lcd_print_centered("Error! File system is corrupted!", 160, 116, 0xFFFF, 0x0000);
