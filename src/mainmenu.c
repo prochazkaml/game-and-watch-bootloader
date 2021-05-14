@@ -42,8 +42,6 @@ void draw_border(int i, int color) {
 void update_screen() {
 	int i, j;
 	char buffer[32];
-	RTC_TimeTypeDef sTime;
-	RTC_DateTypeDef sDate;
 
 	// Clear the working area
 
@@ -74,10 +72,7 @@ void update_screen() {
 
 	// Draw the clock
 
-	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-
-	snprintf(buffer, 32, "%02d%c%02d", sTime.Hours, (sTime.SubSeconds & 16384) ? ' ' : ':', sTime.Minutes);
+	snprinttime(buffer, 32);
 	lcd_print_rtl(buffer, 316, 4, 0xFFFF, LCD_COLOR_GRAYSCALE(4));
 
 	lcd_update();
