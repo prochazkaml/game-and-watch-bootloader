@@ -20,7 +20,6 @@
 #include <string.h>
 #include "stm32h7xx_hal.h"
 #include "stm32.h"
-#include "config.h"
 #include "buttons.h"
 #include "flash.h"
 #include "lcd.h"

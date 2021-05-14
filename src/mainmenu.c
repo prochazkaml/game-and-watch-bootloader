@@ -8,7 +8,6 @@
 #include "lcd.h"
 #include "stm32.h"
 #include "fslib.h"
-#include "config.h"
 
 #include "default.h"
 

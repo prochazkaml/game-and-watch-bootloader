@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <assert.h>
 
 #include "stm32.h"
 #include "lcd.h"
@@ -19,6 +20,33 @@ RTC_HandleTypeDef hrtc;
 
 DAC_HandleTypeDef hdac1;
 DAC_HandleTypeDef hdac2;
+
+uint32_t reg;
+SystemConfig *syscfg = (SystemConfig *) &reg;
+
+/**
+  * @brief Loads the system system configuration and initalizes it, if necessary.
+  * @return Nothing.
+  */
+void config_init() {
+	assert(sizeof(SystemConfig) == 4);
+
+	reg = rtc_readreg(CFG_REG);
+
+	if(syscfg->Magic != 0x6502) {
+		syscfg->Magic = 0x6502;
+		syscfg->Brightness = 7;
+		config_update();
+	}
+}
+
+/**
+  * @brief Saves the current system configuration.
+  * @return Nothing.
+  */
+void config_update() {
+	rtc_writereg(CFG_REG, reg);
+}
 
 /**
   * @brief Reads data from an RTC backup register.

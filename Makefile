@@ -31,7 +31,6 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 src/stm32.c \
-src/config.c \
 src/flash.c \
 src/fslib.c \
 src/lcd.c \

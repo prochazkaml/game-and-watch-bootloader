@@ -1,5 +1,16 @@
 #include "stm32h7xx_hal.h"
 
+typedef struct {
+	uint16_t Magic;
+	uint32_t Brightness : 3;
+} SystemConfig;
+
+extern SystemConfig *syscfg;
+
+#define CFG_REG 0
+
+#define CFG_BACKLIGHT 0x01
+
 extern uint8_t data_buffer[512 * 1024] __attribute__((section (".databuf")));
 
 extern LTDC_HandleTypeDef hltdc;
@@ -24,6 +35,9 @@ void MX_DAC2_Init();
 void MX_RTC_Init();
 void GW_Sleep();
 void Error_Handler();
+
+void config_init();
+void config_update();
 
 uint32_t rtc_readreg(uint8_t reg);
 void rtc_writereg(uint8_t reg, uint32_t data);
