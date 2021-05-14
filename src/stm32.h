@@ -39,6 +39,9 @@ void Error_Handler();
 void config_init();
 void config_update();
 
+void snprinttime(char *buffer, int size);
+void rtc_settimedate(uint8_t h, uint8_t m, uint8_t s, uint8_t D, uint8_t M, uint16_t Y);
+
 uint32_t rtc_readreg(uint8_t reg);
 void rtc_writereg(uint8_t reg, uint32_t data);
 

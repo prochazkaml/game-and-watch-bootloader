@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
 
@@ -36,6 +37,9 @@ void config_init() {
 	if(syscfg->Magic != 0x6502) {
 		syscfg->Magic = 0x6502;
 		syscfg->Brightness = 7;
+
+		rtc_settimedate(8, 0, 0, 17, 9, 2020);
+
 		config_update();
 	}
 }
@@ -46,6 +50,59 @@ void config_init() {
   */
 void config_update() {
 	rtc_writereg(CFG_REG, reg);
+}
+
+/**
+  * @brief Formats the current date into a buffer using snprintf.
+  * @param buffer = Character buffer.
+  * @param size = Size of the character buffer.
+  * @return Nothing.
+  */
+void snprinttime(char *buffer, int size) {
+	const char *days[7] = { "Sun", "Mon", "Tue", "Sat", "Thu", "Fri", "Sat" };
+	const char *months[13] = { "Err", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
+
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	snprintf(buffer, size, "%s %d %s %02d%c%02d", 
+		days[sDate.WeekDay], sDate.Date, months[sDate.Month],
+		sTime.Hours, (sTime.SubSeconds & 16384) ? ' ' : ':', sTime.Minutes);
+}
+
+/**
+  * @brief Sets the system time and date.
+  * @param hms = Time.
+  * @param DMY = Date.
+  * @return Nothing.
+  */
+void rtc_settimedate(uint8_t h, uint8_t m, uint8_t s, uint8_t D, uint8_t M, uint16_t Y) {
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
+
+	/** Initialize RTC and set the Time and Date
+	 */
+	sTime.Hours = h;
+	sTime.Minutes = m;
+	sTime.Seconds = s;
+	sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	if(HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+		Error_Handler();
+
+	sDate.Date = D;
+	sDate.Month = M;
+	sDate.Year = Y % 100;
+
+	sDate.WeekDay = (D += M < 3 ? Y-- : Y - 2, 23*M/9 + D + 4 + Y/4- Y/100 + Y/400)%7;
+
+	if(sDate.WeekDay == 0) sDate.WeekDay = 7;	// Correct for Sunday
+
+	if(HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+		Error_Handler();
 }
 
 /**
@@ -397,8 +454,8 @@ void MX_DAC2_Init() {
   * @retval None
   */
 void MX_RTC_Init() {
-	RTC_TimeTypeDef sTime = {0};
-	RTC_DateTypeDef sDate = {0};
+//	RTC_TimeTypeDef sTime = {0};
+//	RTC_DateTypeDef sDate = {0};
 	
 	/** Initialize RTC Only
 	 */
@@ -416,7 +473,7 @@ void MX_RTC_Init() {
 	
 	/** Initialize RTC and set the Time and Date
 	 */
-	sTime.Hours = 0x0;
+/*	sTime.Hours = 0x0;
 	sTime.Minutes = 0x0;
 	sTime.Seconds = 0x0;
 	sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -430,7 +487,7 @@ void MX_RTC_Init() {
 	sDate.Year = 0x0;
 
 	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-		Error_Handler();
+		Error_Handler();*/
 }
 
 /**
