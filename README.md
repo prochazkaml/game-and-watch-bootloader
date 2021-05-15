@@ -74,4 +74,5 @@ A 64x48 16bpp icon, which will appear in the main menu. If it is not present, th
 - [ ] PC link
 - [ ] Adjustable backlight
 - [ ] Battery indicator
-- [ ] Clock
+- [ ] Clock with time configuration
+- [ ] Efficient battery usage
